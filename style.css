@@ -1084,3 +1084,48 @@ box-shadow:
         padding: 15px;
     }
 }
+.contact-social {
+    margin-top: 20px;
+    display: flex;
+    gap: 18px;
+    justify-content: left;
+}
+.contact-social a {
+    color: #2563eb;
+    font-size: 1.7rem;
+    transition: color 0.2s;
+}
+.contact-social a:hover {
+    color: #f43f5e; /* Pink highlight on hover */
+}
+.social-links {
+    display: flex;
+    gap: 18px;
+    margin: 30px 0;
+    justify-content: center; /* or left/right as needed */
+}
+.social-links a {
+    color: #2563eb;                  /* blue, matches your theme */
+    font-size: 1.7rem;
+    border-radius: 50%;
+    background: transparent;
+    transition: background 0.2s, color 0.2s, transform 0.12s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+}
+.social-links a:hover {
+    color: #10B981;                  /* green highlight on hover */
+    background: #f8fafc;
+    transform: translateY(-4px) scale(1.08);
+}
+.social-links a[title="WhatsApp"]:hover { color: #25D366; }
+.social-links a[title="Telegram"]:hover { color: #229ED9; }
+.social-links a[title="X (Twitter)"]:hover { color: #000; }
+.social-links a[title="Snapchat"]:hover { color: #FFFC00; background: #fff; }
+.social-links a[title="Pinterest"]:hover { color: #E60023; }
+.social-links a[title="Instagram"]:hover { color: #e1306c; }
+.social-links a[title="GitHub"]:hover { color: #333; }
+.social-links a[title="LinkedIn"]:hover { color: #0077b5; }
