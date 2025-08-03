@@ -1128,3 +1128,45 @@ box-shadow:
 .social-links a[title="Instagram"]:hover { color: #e1306c; }
 .social-links a[title="GitHub"]:hover { color: #333; }
 .social-links a[title="LinkedIn"]:hover { color: #0077b5; }
+/* Make sure all containers don't overflow small screens */
+.container, .age-calculator-card, section, footer, header {
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Make big cards adapt */
+.age-calculator-card {
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Responsive media query for common mobile sizes */
+@media (max-width: 700px) {
+    .container {
+        padding: 0 8px;
+    }
+    .age-calculator-card {
+        padding: 0 0 24px 0;
+        max-width: 98%;
+    }
+    .calculator-header,
+    .calculator-body,
+    .results-area {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    .social-links {
+        gap: 12px;
+        font-size: 1.2rem;
+    }
+    .results-area,
+    .calculator-body {
+        padding: 10px 8px;
+    }
+    form .form-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
