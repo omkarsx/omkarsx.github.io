@@ -2270,3 +2270,36 @@ footer::before {
         transition: none;
     }
 }
+/* Increase header height a bit */
+header {
+  height: 80px;                 /* was 64px */
+  display: flex;
+  align-items: center;
+}
+
+/* Keep items aligned within the header */
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* Allow a bigger logo but cap it so header doesn't overflow */
+.logo img {
+  max-height: 172px;             /* increase from 48px */
+  width: auto;
+  display: block;
+}
+
+/* Match nav link vertical alignment */
+.nav-links a {
+  line-height: 80px;            /* match header height */
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  header { height: 68px; }
+  .logo img { max-height: 52px; }
+  .nav-links a { line-height: 68px; }
+}
