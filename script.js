@@ -2,7 +2,7 @@
 emailjs.init("lMTFAcuD2JlvF_3AQ"); // Replace with your actual public key
 
 // Define your service and template IDs
-const serviceID = "service_kbel4uh";      // e.g., "service_abc123"
+const serviceID = "service_v4u9b0q";      // e.g., "service_abc123"
 const templateID = "template_pn9akwp";    // e.g., "template_xyz789"
 
 // Send email function
