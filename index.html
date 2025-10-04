@@ -14,6 +14,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <!-- Your own CSS -->
     <link rel="stylesheet" href="style.css">
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "lMTFAcuD2JlvF_3AQ",
+      });
+   })();
+</script>
 </head>
 <body>
     <!-- Header -->
@@ -172,20 +182,7 @@
                 </div>
             </div>
             <div class="contact-form">
-                <form id="contactForm"
-                      action="https://api.web3forms.com/submit"
-                      method="POST"
-                      accept-charset="UTF-8">
-                    
-                    <!-- Web3Forms Access Key -->
-                    <input type="hidden" name="access_key" value="1d6c88c4-0d5c-46b0-b2b3-a56675d84da5">
-                    
-                    <!-- Optional: Custom subject line -->
-                    <input type="hidden" name="subject" value="New Contact Form Submission from Portfolio">
-                    
-                    <!-- Honeypot field for spam protection -->
-                    <input type="checkbox" name="botcheck" id="" style="display: none;">
-                    
+                <form id="contactForm">
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" id="name" name="name" required>
@@ -201,6 +198,7 @@
                     <button type="submit" class="btn">Send Message</button>
                 </form>
             </div>
+            <script type="text/javascript" src=" script.js"></script>
         </div>
     </div>
 </section>
