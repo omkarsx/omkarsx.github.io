@@ -17,7 +17,7 @@
     <!-- Lenis CSS and JS -->
     <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.11/dist/lenis.css">
     <script src="https://unpkg.com/lenis@1.3.11/dist/lenis.min.js"></script>
-
+    <!-- EmailJS SDK -->
     <script type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
 </script>
@@ -29,6 +29,7 @@
    })();
 </script>
 </head>
+<!-- Lenis CSS and JS -->
 <script>
   // Create Lenis instance
   const lenis = new Lenis({
@@ -319,14 +320,6 @@
             const email = document.getElementById('email').value;
             const message = document.getElementById('message').value;
             
-            // Simple validation
-            if (name && email && message) {
-                // In a real application, you would send this data to a server
-                alert(`Thank you, ${name}! Your message has been sent. I'll get back to you soon.`);
-                contactForm.reset();
-            } else {
-                alert('Please fill in all fields.');
-            }
         });
         
         // Animate skill bars when they come into view
