@@ -433,11 +433,13 @@ header.scrolled {
     background-color: white;
 }
 
+
 .about-content {
     display: flex;
     align-items: center;
     gap: 60px;
 }
+
 
 .about-image {
     flex: 1;
@@ -448,21 +450,39 @@ header.scrolled {
     position: relative;
 }
 
+
+/* Disabled image sizing/transition rules to remove About photo while preserving container */
+/*
 .about-image img {
     width: 100%;
     height: auto;
     display: block;
     transition: var(--transition);
 }
+*/
+
+/* Optional: ensure the image stays hidden even if present in HTML */
+.about-image img { display: none; } /* hides element from layout */
+
+
+/* NEW: hide the now-empty image column so no line shows */
+.about-image { display: none; } /* reversible, removes empty column */
+
+
+/* NEW: allow text column to take full width */
+.about-text { flex: 1 1 100%; }
+
 
 .about-image:hover img {
     transform: scale(1.05);
 }
 
+
 .about-text {
     flex: 1;
     animation: fadeInRight 1s ease;
 }
+
 
 .about-text h3 {
     font-size: 2rem;
@@ -474,11 +494,13 @@ header.scrolled {
     color: transparent;
 }
 
+
 .about-text p {
     margin-bottom: 20px;
     color: var(--gray);
     line-height: 1.7;
 }
+
 
 .interests {
     display: flex;
@@ -486,6 +508,7 @@ header.scrolled {
     gap: 15px;
     margin-top: 30px;
 }
+
 
 .interest {
     background: rgba(37, 99, 235, 0.1);
@@ -498,16 +521,19 @@ header.scrolled {
     border: 1px solid rgba(124, 58, 237, 0.2);
 }
 
+
 .interest:hover {
     background: var(--primary);
     color: white;
     transform: translateY(-3px);
 }
 
+
 /* Futuristic enhancements for about section */
 .about {
     background: var(--gradient-bg);
 }
+
 
 .about-image {
     background: var(--glass-bg);
@@ -516,6 +542,7 @@ header.scrolled {
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
 }
+
 
 .about-image::before {
     content: '';
@@ -531,10 +558,12 @@ header.scrolled {
     pointer-events: none;
 }
 
+
 .about-image:hover::before {
     opacity: 0.3;
     box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
 }
+
 
 .about-text {
     background: var(--glass-bg);
@@ -546,6 +575,7 @@ header.scrolled {
     box-shadow: var(--glass-shadow);
 }
 
+
 /* Futuristic interest tags */
 .interest {
     background: rgba(124, 58, 237, 0.1);
@@ -554,6 +584,7 @@ header.scrolled {
     position: relative;
     overflow: hidden;
 }
+
 
 .interest::before {
     content: '';
@@ -566,9 +597,11 @@ header.scrolled {
     transition: 0.5s;
 }
 
+
 .interest:hover::before {
     left: 100%;
 }
+
 
 .interest:hover {
     background: var(--neon-violet);
@@ -578,11 +611,13 @@ header.scrolled {
     border-color: var(--neon-violet);
 }
 
+
 /* Focus states for accessibility */
 .interest:focus-visible {
     outline: 2px solid var(--neon-cyan);
     outline-offset: 2px;
 }
+
 
 /* Animations */
 @keyframes fadeInLeft {
@@ -596,6 +631,7 @@ header.scrolled {
     }
 }
 
+
 @keyframes fadeInRight {
     from {
         opacity: 0;
@@ -606,6 +642,7 @@ header.scrolled {
         transform: translateX(0);
     }
 }
+
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
