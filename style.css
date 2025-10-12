@@ -270,6 +270,7 @@ header.scrolled {
     overflow: hidden;
 }
 
+
 .hero::before {
     content: '';
     position: absolute;
@@ -282,6 +283,7 @@ header.scrolled {
     z-index: -1;
 }
 
+
 .hero-content {
     display: flex;
     align-items: center;
@@ -289,10 +291,12 @@ header.scrolled {
     gap: 40px;
 }
 
+
 .hero-text {
     flex: 1;
     animation: fadeInUp 1s ease;
 }
+
 
 .hero-text h1 {
     font-size: 3.5rem;
@@ -304,10 +308,12 @@ header.scrolled {
     color: transparent;
 }
 
+
 .hero-text h1 span {
     color: var(--neon-cyan);
     text-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
 }
+
 
 .hero-text p {
     font-size: 1.2rem;
@@ -317,6 +323,7 @@ header.scrolled {
     line-height: 1.7;
 }
 
+
 .hero-illustration {
     flex: 1;
     display: flex;
@@ -325,6 +332,7 @@ header.scrolled {
     position: relative;
 }
 
+
 .hero-illustration img {
     max-width: 100%;
     height: auto;
@@ -332,14 +340,17 @@ header.scrolled {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
+
 /* Futuristic enhancements for hero section */
 .hero {
     background: var(--gradient-bg);
 }
 
+
 .hero-text h1 {
     position: relative;
 }
+
 
 .hero-text h1::after {
     content: '';
@@ -353,6 +364,7 @@ header.scrolled {
     box-shadow: 0 0 12px var(--neon-violet);
 }
 
+
 /* Glass card for hero content */
 .hero-text {
     background: var(--glass-bg);
@@ -363,6 +375,7 @@ header.scrolled {
     padding: 40px;
     box-shadow: var(--glass-shadow);
 }
+
 
 /* Animated gradient background */
 .hero::after {
@@ -383,10 +396,12 @@ header.scrolled {
     background-size: 200% 200%;
 }
 
+
 /* Floating animation for illustration */
 .hero-illustration {
     animation: float 6s ease-in-out infinite;
 }
+
 
 /* Animations */
 @keyframes fadeInUp {
@@ -400,10 +415,12 @@ header.scrolled {
     }
 }
 
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
 
 @keyframes gradientShift {
     0% { background-position: 0% 50%; }
@@ -411,11 +428,13 @@ header.scrolled {
     100% { background-position: 0% 50%; }
 }
 
+
 @keyframes float {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-20px); }
     100% { transform: translateY(0px); }
 }
+
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
@@ -426,6 +445,36 @@ header.scrolled {
     .hero::after {
         animation: none;
     }
+}
+
+
+/* === 3D Tilt setup for hero photo (Option 2, append-only) === */
+.tilt {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  will-change: transform;
+  backface-visibility: hidden;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.18);
+}
+
+.tilt img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: inherit;
+  transform: translateZ(20px);
+  backface-visibility: hidden;
+}
+
+.hero-photo { 
+  border-radius: 22px; 
+  overflow: clip; 
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt { transform: none; perspective: none; }
+  .tilt img { transform: none; }
 }
 
 /* About Section */
