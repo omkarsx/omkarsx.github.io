@@ -118,7 +118,7 @@
       }
       setApiStatus("Backend online", "online");
     } catch (error) {
-      setApiStatus("Backend offline (run: node server.js)", "offline");
+      setApiStatus("Backend offline (run: start-server.bat)", "offline");
     }
   };
 
@@ -232,7 +232,7 @@
         vulnOutput.innerHTML = `
           <p><span class="severity sev-high">high</span> Live analysis failed.</p>
           <p class="muted">${escapeHtml(error.message || "Unknown error")}</p>
-          <p class="muted">Make sure backend is running: <code>node server.js</code></p>
+          <p class="muted">Make sure backend is running: <code>start-server.bat</code></p>
         `;
       }
     });
@@ -508,3 +508,4 @@
     });
   }
 })();
+
