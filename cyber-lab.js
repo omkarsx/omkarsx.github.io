@@ -30,6 +30,9 @@
   const rsaStatus = document.getElementById("rsaStatus");
 
   const THEME_KEY = "omkarx-theme";
+  const rawApiBase = typeof window.OMKARX_API_BASE === "string" ? window.OMKARX_API_BASE.trim() : "";
+  const API_BASE = rawApiBase.replace(/\/+$/, "");
+  const apiUrl = (path) => (API_BASE ? `${API_BASE}${path}` : path);
 
   if (yearEl) {
     yearEl.textContent = String(new Date().getFullYear());
@@ -112,13 +115,16 @@
     setApiStatus("Checking backend...", "");
 
     try {
-      const response = await fetch("/api/health", { method: "GET" });
+      const response = await fetch(apiUrl("/api/health"), { method: "GET" });
       if (!response.ok) {
         throw new Error("Backend unhealthy");
       }
       setApiStatus("Backend online", "online");
     } catch (error) {
-      setApiStatus("Backend offline (run: start-server.bat)", "offline");
+      const hint = API_BASE
+        ? `Backend offline (${API_BASE})`
+        : "Backend offline (run: start-server.bat)";
+      setApiStatus(hint, "offline");
     }
   };
 
@@ -212,7 +218,7 @@
       vulnOutput.innerHTML = '<p class="loader"><span></span><span></span><span></span> Running live backend analysis...</p>';
 
       try {
-        const response = await fetch("/api/security/analyze-url", {
+        const response = await fetch(apiUrl("/api/security/analyze-url"), {
           method: "POST",
           headers: {
             "content-type": "application/json"
@@ -229,10 +235,13 @@
 
         renderAnalyzerResult(payload);
       } catch (error) {
+        const backendHint = API_BASE
+          ? `Make sure your backend is reachable: <code>${escapeHtml(API_BASE)}</code>`
+          : "Make sure backend is running: <code>start-server.bat</code>";
         vulnOutput.innerHTML = `
           <p><span class="severity sev-high">high</span> Live analysis failed.</p>
           <p class="muted">${escapeHtml(error.message || "Unknown error")}</p>
-          <p class="muted">Make sure backend is running: <code>start-server.bat</code></p>
+          <p class="muted">${backendHint}</p>
         `;
       }
     });

@@ -24,10 +24,21 @@ $MimeTypes = @{
     ".ico"  = "image/x-icon"
     ".webp" = "image/webp"
 }
+$CorsAllowOrigin = "*"
+$CorsAllowMethods = "GET, POST, OPTIONS"
+$CorsAllowHeaders = "content-type"
+
+function Add-CorsHeaders {
+    param($Response)
+    $Response.Headers["Access-Control-Allow-Origin"] = $CorsAllowOrigin
+    $Response.Headers["Access-Control-Allow-Methods"] = $CorsAllowMethods
+    $Response.Headers["Access-Control-Allow-Headers"] = $CorsAllowHeaders
+}
 
 function Send-Bytes {
     param($Context, [int]$StatusCode, [string]$ContentType, [byte[]]$Bytes, [string]$CacheControl = $null)
     $response = $Context.Response
+    Add-CorsHeaders -Response $response
     $response.StatusCode = $StatusCode
     $response.ContentType = $ContentType
     if ($CacheControl) {
@@ -367,6 +378,11 @@ try {
         $path = $request.Url.AbsolutePath
 
         try {
+            if ($request.HttpMethod -eq "OPTIONS" -and $path.StartsWith("/api/")) {
+                Send-Bytes -Context $context -StatusCode 204 -ContentType "text/plain; charset=utf-8" -Bytes ([byte[]]@()) -CacheControl "no-store"
+                continue
+            }
+
             if ($request.HttpMethod -eq "GET" -and $path -eq "/api/health") {
                 Send-Json -Context $context -StatusCode 200 -Payload @{ ok = $true; timestamp = (Get-Date).ToString("o") }
                 continue

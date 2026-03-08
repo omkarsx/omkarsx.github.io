@@ -44,6 +44,9 @@
         <p class="hero-note">Run <code>start-server.bat</code>, then open <code>http://127.0.0.1:3000/cyber-lab.html</code>.</p>
         <p id="apiStatus" class="status-pill" aria-live="polite">Checking backend...</p>
       </div>
+      <p class="hero-copy">
+        For GitHub Pages deployment, set <code>window.OMKARX_API_BASE</code> below to your hosted backend URL.
+      </p>
     </section>
 
     <section class="tool-grid container">
@@ -146,6 +149,11 @@
     </div>
   </footer>
 
+  <script>
+    // Keep empty for local same-origin mode (start-server.bat).
+    // Set this to your hosted backend origin for production, e.g. https://api.omkarx.tech
+    window.OMKARX_API_BASE = "";
+  </script>
   <script src="cyber-lab.js"></script>
 </body>
 </html>
