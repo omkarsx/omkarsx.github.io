@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Omkar Shinde engineering journey timeline - education, curiosity, cybersecurity internship, OmkarX portfolio, and future mission.">
+  <title>OmkarX | Engineering Journey Timeline</title>
+
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="timeline-page">
+  <div class="scroll-progress" aria-hidden="true">
+    <span id="scrollProgress"></span>
+  </div>
+
+  <div class="page-glow glow-one" aria-hidden="true"></div>
+  <div class="page-glow glow-two" aria-hidden="true"></div>
+
+  <header class="site-header" id="top">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="Go to portfolio home">
+        <img src="images/logo.png" alt="OmkarX logo">
+        <span>OmkarX</span>
+      </a>
+      <nav id="site-nav" class="site-nav" aria-label="Primary">
+        <a href="index.html#home">Home</a>
+        <a href="index.html#about">About</a>
+        <a class="nav-journey-link is-current" href="#journeyTimeline" aria-current="page">
+          <i class="fa-solid fa-route" aria-hidden="true"></i>
+          <span>Journey</span>
+        </a>
+        <a href="index.html#skills">Learning</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#contact">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme" aria-pressed="false">
+          <i class="fa-solid fa-moon" aria-hidden="true"></i>
+          <span>Dark</span>
+        </button>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation" aria-controls="site-nav">
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero section-pad">
+      <div class="container page-hero-grid">
+        <div class="page-hero-copy reveal">
+          <p class="eyebrow">Journey Page</p>
+          <h1>Omkar Shinde - Engineering Journey Timeline</h1>
+          <p class="lead">
+            This page documents the real milestones behind OmkarX, from early curiosity in Karjule Harya to a long-term mission in engineering, cybersecurity, and systems building.
+          </p>
+
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#journeyTimeline">Explore Timeline</a>
+            <a class="btn btn-ghost" href="index.html">Back To Portfolio</a>
+          </div>
+        </div>
+
+        <aside class="journey-summary reveal" aria-label="Journey summary">
+          <div class="summary-profile">
+            <img src="images/Profile1.png" alt="Portrait of Omkar Shinde">
+            <div>
+              <span class="summary-label">Current Identity</span>
+              <h2>Omkar Shinde</h2>
+              <p>ENTC student building OmkarX as a public engineering story.</p>
+            </div>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-card">
+              <span class="summary-label">Birthplace</span>
+              <strong>Karjule Harya, Ahilyanagar</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Current Path</span>
+              <strong>B.Tech ENTC at JSPM University</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Expected Graduation</span>
+              <strong>2028</strong>
+            </div>
+            <div class="summary-card">
+              <span class="summary-label">Mission</span>
+              <strong>Hardware + software + security</strong>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section-pad timeline-section" aria-labelledby="timeline-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Actual Timeline</p>
+          <h2 id="timeline-title">A real engineering story, still in progress</h2>
+          <p class="section-intro">
+            This is the actual journey so far: education, curiosity, internship learning, and the beginning of OmkarX.
+          </p>
+        </div>
+
+        <div class="journey-timeline" id="journeyTimeline">
+          <div class="timeline-rail" aria-hidden="true">
+            <span class="timeline-rail-fill" id="timelineRailFill"></span>
+          </div>
+
+          <article class="timeline-item reveal">
+            <div class="timeline-side">
+              <div class="timeline-card">
+                <div class="timeline-copy">
+                  <span class="timeline-year">2006</span>
+                  <h3>System Boot</h3>
+                  <p>
+                    Omkar Shinde was born in Karjule Harya, Ahilyanagar district, Maharashtra, India. A future engineer enters the system.
+                  </p>
+                  <ul class="chip-list">
+                    <li>Karjule Harya</li>
+                    <li>Ahilyanagar</li>
+                    <li>Maharashtra</li>
+                  </ul>
+                </div>
+                <div class="timeline-preview preview-origin" aria-hidden="true">
+                  <div class="preview-bar">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="preview-body">
+                    <p class="preview-label">System boot</p>
+                    <div class="preview-line w-90"></div>
+                    <div class="preview-line w-65"></div>
+                    <div class="preview-loading">
+                      <span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-node" aria-hidden="true">
+              <span class="timeline-icon"><i class="fa-solid fa-power-off"></i></span>
+            </div>
+            <div class="timeline-side timeline-empty"></div>
+          </article>
+
+          <article class="timeline-item reveal">
+            <div class="timeline-side timeline-empty"></div>
+            <div class="timeline-node" aria-hidden="true">
+              <span class="timeline-icon"><i class="fa-solid fa-desktop"></i></span>
+            </div>
+            <div class="timeline-side">
+              <div class="timeline-card">
+                <div class="timeline-copy">
+                  <span class="timeline-year">2018-2019</span>
+                  <h3>First Technology Curiosity</h3>
+                  <p>
+                    Around 8th standard, Omkar began exploring computers and PC gaming. This period sparked curiosity about how technology works behind the screen.
+                  </p>
+                  <ul class="chip-list">
+                    <li>Computers</li>
+                    <li>PC Gaming</li>
+                    <li>Curiosity</li>
+                  </ul>
+                </div>
+                <div class="timeline-preview preview-campus" aria-hidden="true">
+                  <div class="preview-bar">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="preview-body preview-grid">
+                    <div class="preview-tile">Computers</div>
+                    <div class="preview-tile">Games</div>
+                    <div class="preview-tile">Behind Screen</div>
+                    <div class="preview-tile">How It Works</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="timeline-item reveal">
+            <div class="timeline-side">
+              <div class="timeline-card">
+                <div class="timeline-copy">
+                  <span class="timeline-year">March 2022</span>
+                  <h3>Secondary School Completion</h3>
+                  <p>
+                    Completed 10th grade from Shri Hareshwar Vidhyalay, Karjule Harya, Ahilyanagar with a score of 75.80%. This phase strengthened his interest in science and technology.
+                  </p>
+                  <ul class="chip-list">
+                    <li>10th Grade</li>
+                    <li>75.80%</li>
+                    <li>Science Interest</li>
+                  </ul>
+                </div>
+                <div class="timeline-preview preview-campus" aria-hidden="true">
+                  <div class="preview-bar">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="preview-body">
+                    <p class="preview-label">Academic checkpoint</p>
+                    <div class="preview-score">
+                      <strong>75.80%</strong>
+                      <span>Secondary school result</span>
+                    </div>
+                    <div class="preview-line w-85"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-node" aria-hidden="true">
+              <span class="timeline-icon"><i class="fa-solid fa-school"></i></span>
+            </div>
+            <div class="timeline-side timeline-empty"></div>
+          </article>
+
+          <article class="timeline-item reveal">
+            <div class="timeline-side timeline-empty"></div>
+            <div class="timeline-node" aria-hidden="true">
+              <span class="timeline-icon"><i class="fa-solid fa-flask"></i></span>
+            </div>
+            <div class="timeline-side">
+              <div class="timeline-card">
+                <div class="timeline-copy">
+                  <span class="timeline-year">February 2024</span>
+                  <h3>Higher Secondary Education</h3>
+                  <p>
+                    Completed 12th Science from Shri Dhokeshwar Junior College, Takli Dhokeshwar with 65.33%. This stage prepared the foundation for entering engineering.
+                  </p>
+                  <ul class="chip-list">
+                    <li>12th Science</li>
+                    <li>65.33%</li>
+                    <li>Foundation</li>
+                    <li>Engineering Prep</li>
+                  </ul>
+                </div>
+                <div class="timeline-preview preview-campus" aria-hidden="true">
+                  <div class="preview-bar">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="preview-body">
+                    <p class="preview-label">Academic checkpoint</p>
+                    <div class="preview-score">
+                      <strong>65.33%</strong>
+                      <span>Higher secondary result</span>
+                    </div>
+                    <div class="preview-line w-85"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="timeline-item reveal">
+            <div class="timeline-side">
+              <div class="timeline-card">
+                <div class="timeline-copy">
+                  <span class="timeline-year">2024</span>
+                  <h3>Beginning of Engineering Journey</h3>
+                  <p>
+                    Started B.Tech in Electronics and Telecommunication Engineering at JSPM University, Pune, Maharashtra, India. Expected graduation: 2028.
+                  </p>
+                  <ul class="point-list timeline-notes">
+                    <li>Focus areas of interest: computers</li>
+                    <li>Cybersecurity</li>
+                    <li>Real-world technology systems</li>
+                  </ul>
+                </div>
+                <div class="timeline-preview preview-campus" aria-hidden="true">
+                  <div class="preview-bar">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="preview-body preview-grid">
+                    <div class="preview-tile">B.Tech ENTC</div>
+                    <div class="preview-tile">JSPM University</div>
+                    <div class="preview-tile">Pune</div>
+                    <div class="preview-tile">2028</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-node" aria-hidden="true">
+              <span class="timeline-icon"><i class="fa-solid fa-microchip"></i></span>
+            </div>
+            <div class="timeline-side timeline-empty"></div>
+          </article>
+
+          <article class="timeline-item reveal">
+            <div class="timeline-side timeline-empty"></div>
+            <div class="timeline-node" aria-hidden="true">
+              <span class="timeline-icon"><i class="fa-solid fa-shield-halved"></i></span>
+            </div>
+            <div class="timeline-side">
+              <div class="timeline-card">
+                <div class="timeline-copy">
+                  <span class="timeline-year">2024</span>
+                  <h3>Cybersecurity Internship</h3>
+                  <p>
+                    Completed a Cybersecurity Virtual Internship with Palo Alto Networks. This introduced Omkar to digital security and network protection.
+                  </p>
+                  <ul class="point-list timeline-notes">
+                    <li>Cybersecurity fundamentals</li>
+                    <li>Network security concepts</li>
+                    <li>Basic threat detection techniques</li>
+                  </ul>
+                </div>
+                <div class="timeline-preview preview-security" aria-hidden="true">
+                  <div class="preview-bar">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="preview-body">
+                    <div class="preview-shield">
+                      <i class="fa-solid fa-shield-halved"></i>
+                      <strong>Palo Alto Internship</strong>
+                    </div>
+                    <div class="preview-metrics">
+                      <span>Fundamentals</span>
+                      <span>Network</span>
+                      <span>Detection</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="timeline-item reveal">
+            <div class="timeline-side">
+              <div class="timeline-card">
+                <div class="timeline-copy">
+                  <span class="timeline-year">2025</span>
+                  <h3>Building the OmkarX Portfolio</h3>
+                  <p>
+                    Started developing OmkarX, a personal portfolio and technical identity platform to showcase projects, skills, and document the journey of becoming a technology innovator.
+                  </p>
+                  <ul class="chip-list">
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>JavaScript</li>
+                  </ul>
+                </div>
+                <div class="timeline-preview preview-portfolio" aria-hidden="true">
+                  <div class="preview-bar">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="preview-body">
+                    <div class="preview-brand">
+                      <img src="images/logo.png" alt="OmkarX logo">
+                      <div>
+                        <strong>OmkarX</strong>
+                        <p>Projects, skills, and journey</p>
+                      </div>
+                    </div>
+                    <div class="preview-grid">
+                      <div class="preview-tile">HTML</div>
+                      <div class="preview-tile">CSS</div>
+                      <div class="preview-tile">JavaScript</div>
+                      <div class="preview-tile">Identity</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="timeline-node" aria-hidden="true">
+              <span class="timeline-icon"><i class="fa-solid fa-code"></i></span>
+            </div>
+            <div class="timeline-side timeline-empty"></div>
+          </article>
+
+          <article class="timeline-item reveal">
+            <div class="timeline-side timeline-empty"></div>
+            <div class="timeline-node" aria-hidden="true">
+              <span class="timeline-icon"><i class="fa-solid fa-satellite-dish"></i></span>
+            </div>
+            <div class="timeline-side">
+              <div class="timeline-card future-card">
+                <div class="timeline-copy">
+                  <span class="timeline-year future-year">Future</span>
+                  <h3>Mission in Progress</h3>
+                  <p>
+                    Building projects in embedded systems, cybersecurity, and software development while continuously learning and experimenting with new technologies.
+                  </p>
+                  <p>
+                    This story is still being written.
+                  </p>
+                  <ul class="chip-list">
+                    <li>Embedded Systems</li>
+                    <li>Cybersecurity</li>
+                    <li>Software Development</li>
+                  </ul>
+                </div>
+                <div class="timeline-preview preview-future" aria-hidden="true">
+                  <div class="preview-bar">
+                    <span></span><span></span><span></span>
+                  </div>
+                  <div class="preview-body">
+                    <div class="preview-circuit">
+                      <span></span><span></span><span></span><span></span>
+                    </div>
+                    <div class="preview-line w-85"></div>
+                    <div class="preview-line w-60"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-pad journey-detail-section" aria-labelledby="development-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Technical Development</p>
+          <h2 id="development-title">What I am learning and how I think about engineering</h2>
+        </div>
+
+        <div class="detail-grid">
+          <article class="detail-card reveal">
+            <h3>Programming Languages</h3>
+            <ul class="point-list compact-list">
+              <li>HTML</li>
+              <li>CSS</li>
+              <li>JavaScript (currently learning)</li>
+            </ul>
+          </article>
+
+          <article class="detail-card reveal">
+            <h3>Tools</h3>
+            <ul class="point-list compact-list">
+              <li>Git (learning)</li>
+              <li>VS Code</li>
+            </ul>
+          </article>
+
+          <article class="detail-card reveal">
+            <h3>Hardware Platforms</h3>
+            <ul class="point-list compact-list">
+              <li>Arduino (learning)</li>
+            </ul>
+          </article>
+
+          <article class="detail-card reveal">
+            <h3>Cybersecurity</h3>
+            <ul class="point-list compact-list">
+              <li>Network security fundamentals</li>
+              <li>Basic cybersecurity concepts</li>
+            </ul>
+          </article>
+
+          <article class="detail-card reveal">
+            <h3>Favorite Learning Area</h3>
+            <p>
+              Exploring real-world technology such as computers, cybersecurity, and building systems rather than limiting curiosity to a single classroom subject.
+            </p>
+          </article>
+
+          <article class="detail-card reveal">
+            <h3>Most Challenging Area</h3>
+            <p>
+              Highly theoretical engineering subjects that focus heavily on formulas rather than practical applications.
+            </p>
+          </article>
+
+          <article class="detail-card reveal">
+            <h3>Personal Philosophy</h3>
+            <p>
+              Omkar chose engineering to understand how technology works at its core and to build solutions that make life smarter and more efficient.
+            </p>
+          </article>
+
+          <article class="detail-card reveal">
+            <h3>Dream Role</h3>
+            <p>Tech Innovator / Engineer</p>
+            <ul class="chip-list">
+              <li>Cybersecurity</li>
+              <li>Embedded Systems</li>
+              <li>Artificial Intelligence</li>
+              <li>Web Technologies</li>
+            </ul>
+          </article>
+
+          <article class="detail-card reveal detail-card-wide">
+            <h3>Long-Term Goal</h3>
+            <p>
+              To build innovative technologies and contribute to or create a startup that merges hardware and software to solve real-world problems.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-wrap">
+      <p>&copy; <span id="currentYear"></span> OmkarX. Built with discipline and consistency.</p>
+      <a href="#top" aria-label="Back to top">Back to top <i class="fa-solid fa-arrow-up"></i></a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
