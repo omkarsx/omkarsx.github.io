@@ -1,31 +1,331 @@
-// Initialize EmailJS
-emailjs.init("lMTFAcuD2JlvF_3AQ"); // Replace with your actual public key
+﻿(() => {
+  const root = document.documentElement;
+  const header = document.querySelector(".site-header");
+  const navToggle = document.querySelector(".nav-toggle");
+  const nav = document.querySelector(".site-nav");
+  const themeToggle = document.getElementById("themeToggle");
+  const scrollProgress = document.getElementById("scrollProgress");
+  const filterButtons = document.querySelectorAll(".filter-btn");
+  const projectCards = document.querySelectorAll(".project-card");
+  const copyEmailBtn = document.getElementById("copyEmailBtn");
+  const copyStatus = document.getElementById("copyStatus");
+  const emailLink = document.getElementById("emailLink");
+  const localClock = document.getElementById("localClock");
 
-// Define your service and template IDs
-const serviceID = "service_v4u9b0q";      // e.g., "service_abc123"
-const templateID = "template_pn9akwp";    // e.g., "template_xyz789"
+  const contactForm = document.getElementById("contactForm");
+  const statusEl = document.getElementById("formStatus");
+  const yearEl = document.getElementById("currentYear");
+  const nameInput = document.getElementById("name");
+  const emailInput = document.getElementById("email");
+  const messageInput = document.getElementById("message");
 
-// Send email function
-function sendEmail() {
-    const templateParams = {
-        name: document.querySelector("#name").value,
-        email: document.querySelector("#email").value,
-        message: document.querySelector("#message").value,
-    };
-    
-    emailjs.send(serviceID, templateID, templateParams)
-        .then(function(response) {
-            console.log('SUCCESS!', response.status, response.text);
-            alert('Message sent successfully!');
-            document.getElementById('contactForm').reset();
-        }, function(error) {
-            console.log('FAILED...', error);
-            alert('Failed to send message. Please try again.');
+  const EMAILJS_CONFIG = {
+    publicKey: "lMTFAcuD2JlvF_3AQ",
+    serviceID: "service_v4u9b0q",
+    templateID: "template_pn9akwp"
+  };
+
+  const THEME_KEY = "omkarx-theme";
+
+  if (yearEl) {
+    yearEl.textContent = String(new Date().getFullYear());
+  }
+
+  const updateThemeButton = (theme) => {
+    if (!themeToggle) {
+      return;
+    }
+
+    const icon = themeToggle.querySelector("i");
+    const text = themeToggle.querySelector("span");
+
+    if (theme === "light") {
+      themeToggle.setAttribute("aria-pressed", "true");
+      if (icon) {
+        icon.className = "fa-solid fa-sun";
+      }
+      if (text) {
+        text.textContent = "Light";
+      }
+    } else {
+      themeToggle.setAttribute("aria-pressed", "false");
+      if (icon) {
+        icon.className = "fa-solid fa-moon";
+      }
+      if (text) {
+        text.textContent = "Dark";
+      }
+    }
+  };
+
+  const applyTheme = (theme) => {
+    root.setAttribute("data-theme", theme);
+    updateThemeButton(theme);
+  };
+
+  const getInitialTheme = () => {
+    const saved = window.localStorage.getItem(THEME_KEY);
+    if (saved === "dark" || saved === "light") {
+      return saved;
+    }
+
+    const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+    return prefersLight ? "light" : "dark";
+  };
+
+  applyTheme(getInitialTheme());
+
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      const current = root.getAttribute("data-theme") === "light" ? "light" : "dark";
+      const nextTheme = current === "dark" ? "light" : "dark";
+      applyTheme(nextTheme);
+      window.localStorage.setItem(THEME_KEY, nextTheme);
+    });
+  }
+
+  const updateHeaderAndProgress = () => {
+    if (header) {
+      if (window.scrollY > 12) {
+        header.classList.add("is-scrolled");
+      } else {
+        header.classList.remove("is-scrolled");
+      }
+    }
+
+    if (scrollProgress) {
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
+      scrollProgress.style.width = `${Math.min(Math.max(progress, 0), 100)}%`;
+    }
+  };
+
+  updateHeaderAndProgress();
+  window.addEventListener("scroll", updateHeaderAndProgress, { passive: true });
+
+  if (navToggle && nav) {
+    navToggle.addEventListener("click", () => {
+      const expanded = navToggle.getAttribute("aria-expanded") === "true";
+      navToggle.setAttribute("aria-expanded", String(!expanded));
+      nav.classList.toggle("open", !expanded);
+      navToggle.innerHTML = !expanded
+        ? '<i class="fa-solid fa-xmark" aria-hidden="true"></i>'
+        : '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+    });
+  }
+
+  const closeNav = () => {
+    if (!nav || !navToggle) {
+      return;
+    }
+
+    nav.classList.remove("open");
+    navToggle.setAttribute("aria-expanded", "false");
+    navToggle.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+  };
+
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", (event) => {
+      const href = anchor.getAttribute("href");
+      if (!href || href === "#") {
+        return;
+      }
+
+      const target = document.querySelector(href);
+      if (!target) {
+        return;
+      }
+
+      event.preventDefault();
+      const offset = header ? header.offsetHeight : 0;
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - offset + 2;
+      window.scrollTo({ top: targetTop, behavior: "smooth" });
+      closeNav();
+    });
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 860) {
+      closeNav();
+    }
+  });
+
+  const revealNodes = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window && revealNodes.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
         });
-}
+      },
+      {
+        threshold: 0.18,
+        rootMargin: "0px 0px -40px 0px"
+      }
+    );
 
-// Attach event listener to form
-document.getElementById('contactForm').addEventListener('submit', function(event) {
+    revealNodes.forEach((node) => observer.observe(node));
+  } else {
+    revealNodes.forEach((node) => node.classList.add("is-visible"));
+  }
+
+  if (localClock) {
+    const renderClock = () => {
+      localClock.textContent = new Date().toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    };
+
+    renderClock();
+    window.setInterval(renderClock, 30000);
+  }
+
+  if (filterButtons.length && projectCards.length) {
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filter || "all";
+
+        filterButtons.forEach((btn) => {
+          const isActive = btn === button;
+          btn.classList.toggle("active", isActive);
+          btn.setAttribute("aria-pressed", String(isActive));
+        });
+
+        projectCards.forEach((card) => {
+          const category = card.dataset.category || "";
+          const shouldShow = filter === "all" || category === filter;
+          card.classList.toggle("is-hidden", !shouldShow);
+        });
+      });
+    });
+  }
+
+  const setCopyStatus = (message, type = "") => {
+    if (!copyStatus) {
+      return;
+    }
+
+    copyStatus.textContent = message;
+    copyStatus.classList.remove("success", "error");
+    if (type) {
+      copyStatus.classList.add(type);
+    }
+  };
+
+  const fallbackCopyText = (value) => {
+    const helper = document.createElement("textarea");
+    helper.value = value;
+    helper.setAttribute("readonly", "readonly");
+    helper.style.position = "absolute";
+    helper.style.left = "-9999px";
+    document.body.appendChild(helper);
+    helper.select();
+
+    const copied = document.execCommand("copy");
+    document.body.removeChild(helper);
+    return copied;
+  };
+
+  if (copyEmailBtn && emailLink) {
+    copyEmailBtn.addEventListener("click", async () => {
+      const email = emailLink.textContent ? emailLink.textContent.trim() : "";
+      if (!email) {
+        setCopyStatus("Email not available.", "error");
+        return;
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(email);
+        } else {
+          const copied = fallbackCopyText(email);
+          if (!copied) {
+            throw new Error("Fallback copy failed");
+          }
+        }
+
+        setCopyStatus("Email copied to clipboard.", "success");
+      } catch (error) {
+        setCopyStatus("Could not copy email. Please copy manually.", "error");
+      }
+    });
+  }
+
+  const setFormStatus = (message, type = "") => {
+    if (!statusEl) {
+      return;
+    }
+
+    statusEl.textContent = message;
+    statusEl.classList.remove("success", "error");
+    if (type) {
+      statusEl.classList.add(type);
+    }
+  };
+
+  if (window.emailjs) {
+    try {
+      window.emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
+    } catch (error) {
+      setFormStatus("Email service initialization failed. Please use direct email.", "error");
+    }
+  }
+
+  if (!contactForm) {
+    return;
+  }
+
+  contactForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    sendEmail();
-});
+
+    const name = nameInput ? nameInput.value.trim() : "";
+    const email = emailInput ? emailInput.value.trim() : "";
+    const message = messageInput ? messageInput.value.trim() : "";
+
+    if (!name || !email || !message) {
+      setFormStatus("Please fill all required fields.", "error");
+      return;
+    }
+
+    const submitButton = contactForm.querySelector("button[type='submit']");
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Sending...";
+    }
+
+    if (!window.emailjs) {
+      setFormStatus("Email service is unavailable right now. Please use the email link above.", "error");
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Send Message";
+      }
+      return;
+    }
+
+    try {
+      await window.emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, {
+        name,
+        email,
+        message,
+        sent_at: new Date().toLocaleString("en-IN", {
+          dateStyle: "medium",
+          timeStyle: "short"
+        })
+      });
+
+      contactForm.reset();
+      setFormStatus("Message sent successfully. I will reply soon.", "success");
+    } catch (error) {
+      setFormStatus("Could not send your message. Please try again or email directly.", "error");
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Send Message";
+      }
+    }
+  });
+})();
