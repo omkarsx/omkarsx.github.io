@@ -11,6 +11,9 @@
   const copyStatus = document.getElementById("copyStatus");
   const emailLink = document.getElementById("emailLink");
   const localClock = document.getElementById("localClock");
+  const journeyTimeline = document.getElementById("journeyTimeline");
+  const timelineRailFill = document.getElementById("timelineRailFill");
+  const timelineItems = Array.from(document.querySelectorAll(".timeline-item"));
 
   const contactForm = document.getElementById("contactForm");
   const statusEl = document.getElementById("formStatus");
@@ -138,7 +141,9 @@
 
       event.preventDefault();
       const offset = header ? header.offsetHeight : 0;
-      const targetTop = target.getBoundingClientRect().top + window.scrollY - offset + 2;
+      const targetTop = href === "#top"
+        ? 0
+        : Math.max(target.getBoundingClientRect().top + window.scrollY - offset + 2, 0);
       window.scrollTo({ top: targetTop, behavior: "smooth" });
       closeNav();
     });
@@ -170,6 +175,55 @@
     revealNodes.forEach((node) => observer.observe(node));
   } else {
     revealNodes.forEach((node) => node.classList.add("is-visible"));
+  }
+
+  if (journeyTimeline && timelineRailFill && timelineItems.length) {
+    const updateTimelineState = () => {
+      const viewportAnchor = window.innerHeight * 0.42;
+      const timelineRect = journeyTimeline.getBoundingClientRect();
+      const travelSpace = Math.max(journeyTimeline.offsetHeight - window.innerHeight * 0.35, 1);
+      const covered = viewportAnchor - timelineRect.top;
+      const progress = Math.min(Math.max(covered / travelSpace, 0), 1);
+      timelineRailFill.style.transform = `scaleY(${progress})`;
+
+      let activeItem = timelineRect.bottom < viewportAnchor
+        ? timelineItems[timelineItems.length - 1]
+        : timelineItems[0];
+      let minDistance = Number.POSITIVE_INFINITY;
+
+      timelineItems.forEach((item) => {
+        const rect = item.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const distance = Math.abs(center - viewportAnchor);
+        const isVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+
+        if (isVisible && distance < minDistance) {
+          minDistance = distance;
+          activeItem = item;
+        }
+      });
+
+      timelineItems.forEach((item) => {
+        item.classList.toggle("is-active", item === activeItem);
+      });
+    };
+
+    let timelineTicking = false;
+    const requestTimelineUpdate = () => {
+      if (timelineTicking) {
+        return;
+      }
+
+      timelineTicking = true;
+      window.requestAnimationFrame(() => {
+        updateTimelineState();
+        timelineTicking = false;
+      });
+    };
+
+    updateTimelineState();
+    window.addEventListener("scroll", requestTimelineUpdate, { passive: true });
+    window.addEventListener("resize", requestTimelineUpdate);
   }
 
   if (localClock) {
