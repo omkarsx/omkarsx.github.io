@@ -186,6 +186,7 @@
   if (circuitCanvas instanceof HTMLCanvasElement) {
     const circuitContext = circuitCanvas.getContext("2d");
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const coarsePointerPreference = window.matchMedia("(hover: none), (pointer: coarse)");
 
     if (circuitContext) {
       const pointerState = {
@@ -217,6 +218,8 @@
           grid: styles.getPropertyValue("--circuit-grid").trim()
         };
       };
+
+      const isLowPowerCircuitMode = () => motionPreference.matches || coarsePointerPreference.matches;
 
       const randomBetween = (min, max) => min + Math.random() * (max - min);
 
@@ -324,9 +327,10 @@
       };
 
       const regenerateCircuit = () => {
+        const lowPowerCircuit = isLowPowerCircuitMode();
         circuitState.width = window.innerWidth;
         circuitState.height = window.innerHeight;
-        circuitState.dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+        circuitState.dpr = lowPowerCircuit ? 1 : Math.min(window.devicePixelRatio || 1, 1.75);
         circuitCanvas.width = Math.max(Math.round(circuitState.width * circuitState.dpr), 1);
         circuitCanvas.height = Math.max(Math.round(circuitState.height * circuitState.dpr), 1);
         circuitCanvas.style.width = `${circuitState.width}px`;
@@ -334,8 +338,12 @@
         circuitContext.setTransform(circuitState.dpr, 0, 0, circuitState.dpr, 0, 0);
         circuitState.palette = readCircuitPalette();
 
-        const padding = circuitState.width < 640 ? 34 : 56;
-        const spacing = circuitState.width < 640 ? 92 : circuitState.width < 1024 ? 108 : 124;
+        const padding = lowPowerCircuit
+          ? (circuitState.width < 640 ? 28 : 40)
+          : (circuitState.width < 640 ? 34 : 56);
+        const spacing = lowPowerCircuit
+          ? (circuitState.width < 640 ? 128 : 148)
+          : (circuitState.width < 640 ? 92 : circuitState.width < 1024 ? 108 : 124);
         const columns = Math.max(Math.floor((circuitState.width - padding * 2) / spacing), 4);
         const rows = Math.max(Math.floor((circuitState.height - padding * 2) / spacing), 4);
         const grid = [];
@@ -344,22 +352,26 @@
         for (let row = 0; row <= rows; row += 1) {
           grid[row] = [];
           for (let column = 0; column <= columns; column += 1) {
-            const density = row === 0 || column === 0 || row === rows || column === columns ? 0.7 : 0.84;
+            const density = lowPowerCircuit
+              ? (row === 0 || column === 0 || row === rows || column === columns ? 0.5 : 0.66)
+              : (row === 0 || column === 0 || row === rows || column === columns ? 0.7 : 0.84);
             if (Math.random() > density) {
               grid[row][column] = null;
               continue;
             }
 
-            const x = padding + column * spacing + randomBetween(-18, 18);
-            const y = padding + row * spacing + randomBetween(-18, 18);
-            const isHub = Math.random() > 0.82;
+            const x = padding + column * spacing + randomBetween(lowPowerCircuit ? -12 : -18, lowPowerCircuit ? 12 : 18);
+            const y = padding + row * spacing + randomBetween(lowPowerCircuit ? -12 : -18, lowPowerCircuit ? 12 : 18);
+            const isHub = Math.random() > (lowPowerCircuit ? 0.9 : 0.82);
             const node = {
               id: `circuit-${row}-${column}`,
               row,
               column,
               x,
               y,
-              radius: isHub ? randomBetween(2.6, 3.4) : randomBetween(1.2, 2.2),
+              radius: isHub
+                ? randomBetween(lowPowerCircuit ? 2.2 : 2.6, lowPowerCircuit ? 3 : 3.4)
+                : randomBetween(lowPowerCircuit ? 1.1 : 1.2, lowPowerCircuit ? 1.8 : 2.2),
               hub: isHub
             };
 
@@ -382,10 +394,10 @@
 
         const connections = [];
         nodes.forEach((node) => {
-          const rightNode = findNeighbor(node.row, node.column, 0, 1);
-          const downNode = findNeighbor(node.row, node.column, 1, 0);
+          const rightNode = findNeighbor(node.row, node.column, 0, 1, lowPowerCircuit ? 1 : 2);
+          const downNode = findNeighbor(node.row, node.column, 1, 0, lowPowerCircuit ? 1 : 2);
 
-          if (rightNode && Math.random() < 0.82) {
+          if (rightNode && Math.random() < (lowPowerCircuit ? 0.62 : 0.82)) {
             connections.push({
               from: node,
               to: rightNode,
@@ -393,7 +405,7 @@
             });
           }
 
-          if (downNode && Math.random() < 0.74) {
+          if (downNode && Math.random() < (lowPowerCircuit ? 0.56 : 0.74)) {
             connections.push({
               from: node,
               to: downNode,
@@ -404,7 +416,7 @@
 
         circuitState.nodes = nodes;
         circuitState.connections = connections;
-        circuitState.pulses = motionPreference.matches
+        circuitState.pulses = isLowPowerCircuitMode()
           ? []
           : Array.from(
               { length: Math.min(18, Math.max(8, Math.round(connections.length * 0.18))) },
@@ -413,16 +425,17 @@
       };
 
       const drawCircuitBackground = (deltaTime, timestamp) => {
+        const lowPowerCircuit = isLowPowerCircuitMode();
         circuitContext.setTransform(circuitState.dpr, 0, 0, circuitState.dpr, 0, 0);
         circuitContext.clearRect(0, 0, circuitState.width, circuitState.height);
 
-        const pointerVisible = !motionPreference.matches && pointerState.active && timestamp - pointerState.movedAt < 1800;
+        const pointerVisible = !lowPowerCircuit && pointerState.active && timestamp - pointerState.movedAt < 1800;
         const pointerRadius = circuitState.width < 720 ? 108 : 150;
 
         circuitContext.fillStyle = circuitState.palette.grid;
-        for (let x = 28; x < circuitState.width; x += 92) {
-          for (let y = 24; y < circuitState.height; y += 92) {
-            circuitContext.fillRect(x, y, 1.4, 1.4);
+        for (let x = 28; x < circuitState.width; x += lowPowerCircuit ? 124 : 92) {
+          for (let y = 24; y < circuitState.height; y += lowPowerCircuit ? 124 : 92) {
+            circuitContext.fillRect(x, y, lowPowerCircuit ? 1.1 : 1.4, lowPowerCircuit ? 1.1 : 1.4);
           }
         }
 
@@ -440,8 +453,10 @@
 
           traceConnectionPath(connection);
           circuitContext.strokeStyle = proximity > 0 ? circuitState.palette.lineStrong : circuitState.palette.line;
-          circuitContext.lineWidth = proximity > 0 ? 1.4 + proximity * 0.8 : 1;
-          circuitContext.shadowBlur = proximity > 0 ? 14 * proximity : 0;
+          circuitContext.lineWidth = proximity > 0
+            ? (lowPowerCircuit ? 1.1 + proximity * 0.5 : 1.4 + proximity * 0.8)
+            : (lowPowerCircuit ? 0.9 : 1);
+          circuitContext.shadowBlur = lowPowerCircuit ? 0 : (proximity > 0 ? 14 * proximity : 0);
           circuitContext.shadowColor = circuitState.palette.lineStrong;
           circuitContext.stroke();
         });
@@ -450,24 +465,24 @@
           const proximity = pointerVisible
             ? Math.max(0, 1 - Math.hypot(pointerState.x - node.x, pointerState.y - node.y) / pointerRadius)
             : 0;
-          const glowRadius = node.radius + 6 + proximity * 12;
+          const glowRadius = node.radius + (lowPowerCircuit ? 3 : 6) + proximity * (lowPowerCircuit ? 6 : 12);
 
           circuitContext.shadowBlur = 0;
-          circuitContext.globalAlpha = 0.16 + proximity * 0.24;
+          circuitContext.globalAlpha = lowPowerCircuit ? 0.1 + proximity * 0.12 : 0.16 + proximity * 0.24;
           circuitContext.fillStyle = circuitState.palette.nodeSoft;
           circuitContext.beginPath();
           circuitContext.arc(node.x, node.y, glowRadius, 0, Math.PI * 2);
           circuitContext.fill();
 
           circuitContext.globalAlpha = 1;
-          circuitContext.shadowBlur = 10 + proximity * 18;
+          circuitContext.shadowBlur = lowPowerCircuit ? 0 : 10 + proximity * 18;
           circuitContext.shadowColor = circuitState.palette.pulse;
           circuitContext.fillStyle = circuitState.palette.node;
           circuitContext.beginPath();
           circuitContext.arc(node.x, node.y, node.radius + proximity * 1.5, 0, Math.PI * 2);
           circuitContext.fill();
 
-          if (node.hub) {
+          if (node.hub && !lowPowerCircuit) {
             circuitContext.lineWidth = 1;
             circuitContext.strokeStyle = circuitState.palette.lineStrong;
             circuitContext.beginPath();
@@ -477,7 +492,7 @@
         });
 
         circuitContext.shadowBlur = 0;
-        if (!motionPreference.matches) {
+        if (!lowPowerCircuit) {
           circuitState.pulses.forEach((pulse) => {
             pulse.distance += pulse.speed * deltaTime;
             if (pulse.distance > pulse.connection.totalLength + 22) {
@@ -506,7 +521,7 @@
         circuitState.lastTime = timestamp;
         drawCircuitBackground(deltaTime, timestamp);
 
-        if (!motionPreference.matches && !document.hidden) {
+        if (!isLowPowerCircuitMode() && !document.hidden) {
           circuitState.frameId = window.requestAnimationFrame(renderCircuitFrame);
         } else {
           circuitState.frameId = 0;
@@ -523,7 +538,7 @@
       };
 
       const startCircuitLoop = () => {
-        if (motionPreference.matches || document.hidden || circuitState.frameId) {
+        if (isLowPowerCircuitMode() || document.hidden || circuitState.frameId) {
           return;
         }
 
@@ -544,7 +559,7 @@
       };
 
       const handleCircuitPointer = (event) => {
-        if (motionPreference.matches || event.pointerType === "touch") {
+        if (isLowPowerCircuitMode() || event.pointerType === "touch") {
           return;
         }
 
@@ -572,6 +587,12 @@
         motionPreference.addEventListener("change", rebuildCircuitBackground);
       } else if (typeof motionPreference.addListener === "function") {
         motionPreference.addListener(rebuildCircuitBackground);
+      }
+
+      if (typeof coarsePointerPreference.addEventListener === "function") {
+        coarsePointerPreference.addEventListener("change", rebuildCircuitBackground);
+      } else if (typeof coarsePointerPreference.addListener === "function") {
+        coarsePointerPreference.addListener(rebuildCircuitBackground);
       }
 
       rebuildCircuitBackground();

@@ -3309,7 +3309,46 @@ textarea:focus-visible {
   }
 }
 
-@media (hover: none) {
+@media (hover: none), (pointer: coarse) {
+  .circuit-canvas {
+    opacity: 0.68;
+  }
+
+  .page-glow {
+    filter: blur(72px);
+    opacity: 0.3;
+  }
+
+  .site-header {
+    backdrop-filter: none;
+  }
+
+  .orbit-system,
+  .orbit-system:hover,
+  .orbit-system:focus-within {
+    transform: none;
+  }
+
+  .orbit-system::before,
+  .orbit-glow-one,
+  .orbit-glow-two,
+  .orbit-core,
+  .orbit-core::before,
+  .orbit-track,
+  .orbit-item-inner,
+  .tree-link-flow,
+  .tree-focus-panel::after {
+    animation: none !important;
+  }
+
+  .orbit-panel,
+  .orbit-tech-card,
+  .tree-node,
+  .tree-tooltip,
+  .tree-focus-panel {
+    backdrop-filter: none;
+  }
+
   .project-card {
     transform: none !important;
   }
