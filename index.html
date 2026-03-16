@@ -18,6 +18,7 @@
     <span id="scrollProgress"></span>
   </div>
 
+  <canvas class="circuit-canvas" id="circuitCanvas" aria-hidden="true"></canvas>
   <div class="page-glow glow-one" aria-hidden="true"></div>
   <div class="page-glow glow-two" aria-hidden="true"></div>
 
@@ -220,6 +221,240 @@
       </div>
     </section>
 
+    <section id="tech-stack" class="section-pad orbit-section" aria-labelledby="tech-stack-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Tech Stack Orbit</p>
+          <h2 id="tech-stack-title">Current learning stack</h2>
+        </div>
+
+        <div class="orbit-panel reveal">
+          <div class="orbit-system" role="list" aria-label="Current OmkarX tech stack">
+            <span class="orbit-ring orbit-ring-outer" aria-hidden="true"></span>
+            <span class="orbit-ring orbit-ring-mid" aria-hidden="true"></span>
+            <span class="orbit-ring orbit-ring-inner" aria-hidden="true"></span>
+            <span class="orbit-glow orbit-glow-one" aria-hidden="true"></span>
+            <span class="orbit-glow orbit-glow-two" aria-hidden="true"></span>
+
+            <div class="orbit-core">
+              <span class="orbit-core-mark">OMKAR X</span>
+            </div>
+
+            <div class="orbit-track">
+              <div class="orbit-item" style="--angle: 0deg;" role="listitem">
+                <div class="orbit-item-inner">
+                  <div class="orbit-tech-card" tabindex="0" aria-label="HTML. Used for structuring web pages.">
+                    <span class="orbit-icon orbit-tech-html"><i class="fa-brands fa-html5" aria-hidden="true"></i></span>
+                    <div class="orbit-tooltip">
+                      <strong>HTML</strong>
+                      <span>Used for structuring web pages</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="orbit-item" style="--angle: 51.43deg;" role="listitem">
+                <div class="orbit-item-inner">
+                  <div class="orbit-tech-card" tabindex="0" aria-label="CSS. Used for styling and layout.">
+                    <span class="orbit-icon orbit-tech-css"><i class="fa-brands fa-css3-alt" aria-hidden="true"></i></span>
+                    <div class="orbit-tooltip">
+                      <strong>CSS</strong>
+                      <span>Used for styling and layout</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="orbit-item" style="--angle: 102.86deg;" role="listitem">
+                <div class="orbit-item-inner">
+                  <div class="orbit-tech-card" tabindex="0" aria-label="JavaScript. Used for interactive web features.">
+                    <span class="orbit-icon orbit-tech-js"><i class="fa-brands fa-js" aria-hidden="true"></i></span>
+                    <div class="orbit-tooltip">
+                      <strong>JavaScript</strong>
+                      <span>Used for interactive web features</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="orbit-item" style="--angle: 154.29deg;" role="listitem">
+                <div class="orbit-item-inner">
+                  <div class="orbit-tech-card" tabindex="0" aria-label="Git. Version control system.">
+                    <span class="orbit-icon orbit-tech-git"><i class="fa-brands fa-git-alt" aria-hidden="true"></i></span>
+                    <div class="orbit-tooltip">
+                      <strong>Git</strong>
+                      <span>Version control system</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="orbit-item" style="--angle: 205.71deg;" role="listitem">
+                <div class="orbit-item-inner">
+                  <div class="orbit-tech-card" tabindex="0" aria-label="VS Code. Development environment.">
+                    <span class="orbit-icon orbit-tech-code"><i class="fa-solid fa-code" aria-hidden="true"></i></span>
+                    <div class="orbit-tooltip">
+                      <strong>VS Code</strong>
+                      <span>Development environment</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="orbit-item" style="--angle: 257.14deg;" role="listitem">
+                <div class="orbit-item-inner">
+                  <div class="orbit-tech-card" tabindex="0" aria-label="Arduino. Hardware prototyping platform.">
+                    <span class="orbit-icon orbit-tech-arduino"><i class="fa-solid fa-microchip" aria-hidden="true"></i></span>
+                    <div class="orbit-tooltip">
+                      <strong>Arduino</strong>
+                      <span>Hardware prototyping platform</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="orbit-item" style="--angle: 308.57deg;" role="listitem">
+                <div class="orbit-item-inner">
+                  <div class="orbit-tech-card" tabindex="0" aria-label="Cybersecurity. Network and system protection.">
+                    <span class="orbit-icon orbit-tech-security"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
+                    <div class="orbit-tooltip">
+                      <strong>Cybersecurity</strong>
+                      <span>Network and system protection</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skill-tree" class="section-pad skill-tree-section" aria-labelledby="skill-tree-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Skill Tree</p>
+          <h2 id="skill-tree-title">Technology progression tree</h2>
+          <p class="section-intro">A game-style map of the skills I am currently learning.</p>
+        </div>
+
+        <div class="skill-tree-shell reveal">
+          <div class="skill-tree-stage" id="skillTreeStage" aria-label="OmkarX skill tree">
+            <svg class="skill-tree-lines" id="skillTreeLines" aria-hidden="true"></svg>
+
+            <button type="button" class="tree-node tree-node-core tree-node-technology" data-node="technology" data-branch="all" aria-label="Technology. Current learning base across web development, cybersecurity, and embedded systems.">
+              <span class="tree-node-icon"><i class="fa-solid fa-satellite-dish" aria-hidden="true"></i></span>
+              <span class="tree-node-title">Technology</span>
+              <span class="tree-tooltip">
+                <em class="tree-tooltip-status">Currently Learning</em>
+                <strong>Technology</strong>
+                <span>Current learning base across web development, cybersecurity, and embedded systems.</span>
+              </span>
+            </button>
+
+            <button type="button" class="tree-node tree-node-branch tree-node-web tree-node-tooltip-top" data-node="web-development" data-branch="web" aria-label="Web Development. Currently learning web development fundamentals.">
+              <span class="tree-node-icon"><i class="fa-solid fa-code" aria-hidden="true"></i></span>
+              <span class="tree-node-title">Web Development</span>
+              <span class="tree-tooltip">
+                <em class="tree-tooltip-status">Currently Learning</em>
+                <strong>Web Development</strong>
+                <span>Currently learning web development fundamentals.</span>
+              </span>
+            </button>
+
+            <button type="button" class="tree-node tree-node-leaf tree-node-html tree-node-tooltip-right" data-node="html" data-branch="web" aria-label="HTML. Currently learning page structure and semantics.">
+              <span class="tree-node-icon"><i class="fa-brands fa-html5" aria-hidden="true"></i></span>
+              <span class="tree-node-title">HTML</span>
+              <span class="tree-tooltip">
+                <em class="tree-tooltip-status">Currently Learning</em>
+                <strong>HTML</strong>
+                <span>Currently learning page structure and semantics.</span>
+              </span>
+            </button>
+
+            <button type="button" class="tree-node tree-node-leaf tree-node-css tree-node-tooltip-right" data-node="css" data-branch="web" aria-label="CSS. Currently learning layouts and responsive design.">
+              <span class="tree-node-icon"><i class="fa-brands fa-css3-alt" aria-hidden="true"></i></span>
+              <span class="tree-node-title">CSS</span>
+              <span class="tree-tooltip">
+                <em class="tree-tooltip-status">Currently Learning</em>
+                <strong>CSS</strong>
+                <span>Currently learning layouts and responsive design.</span>
+              </span>
+            </button>
+
+            <button type="button" class="tree-node tree-node-leaf tree-node-javascript tree-node-tooltip-right" data-node="javascript" data-branch="web" aria-label="JavaScript. Currently learning basics and DOM interactions.">
+              <span class="tree-node-icon"><i class="fa-brands fa-js" aria-hidden="true"></i></span>
+              <span class="tree-node-title">JavaScript</span>
+              <span class="tree-tooltip">
+                <em class="tree-tooltip-status">Currently Learning</em>
+                <strong>JavaScript</strong>
+                <span>Currently learning basics and DOM interactions.</span>
+              </span>
+            </button>
+
+            <button type="button" class="tree-node tree-node-branch tree-node-cyber tree-node-tooltip-right tree-node-tooltip-top" data-node="cybersecurity" data-branch="cyber" aria-label="Cybersecurity. Currently learning cybersecurity fundamentals.">
+              <span class="tree-node-icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
+              <span class="tree-node-title">Cybersecurity</span>
+              <span class="tree-tooltip">
+                <em class="tree-tooltip-status">Currently Learning</em>
+                <strong>Cybersecurity</strong>
+                <span>Currently learning cybersecurity fundamentals.</span>
+              </span>
+            </button>
+
+            <button type="button" class="tree-node tree-node-leaf tree-node-network tree-node-tooltip-right tree-node-tooltip-top" data-node="network-security" data-branch="cyber" aria-label="Network Security. Currently learning networking and HTTP basics.">
+              <span class="tree-node-icon"><i class="fa-solid fa-network-wired" aria-hidden="true"></i></span>
+              <span class="tree-node-title">Network Security</span>
+              <span class="tree-tooltip">
+                <em class="tree-tooltip-status">Currently Learning</em>
+                <strong>Network Security</strong>
+                <span>Currently learning networking and HTTP basics.</span>
+              </span>
+            </button>
+
+            <button type="button" class="tree-node tree-node-branch tree-node-embedded tree-node-tooltip-left" data-node="embedded-systems" data-branch="embedded" aria-label="Embedded Systems. Currently learning embedded and IoT basics.">
+              <span class="tree-node-icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></span>
+              <span class="tree-node-title">Embedded Systems</span>
+              <span class="tree-tooltip">
+                <em class="tree-tooltip-status">Currently Learning</em>
+                <strong>Embedded Systems</strong>
+                <span>Currently learning embedded and IoT basics.</span>
+              </span>
+            </button>
+
+            <button type="button" class="tree-node tree-node-leaf tree-node-arduino tree-node-tooltip-left" data-node="arduino" data-branch="embedded" aria-label="Arduino. Currently learning setup workflow and basic sensor projects.">
+              <span class="tree-node-icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></span>
+              <span class="tree-node-title">Arduino</span>
+              <span class="tree-tooltip">
+                <em class="tree-tooltip-status">Currently Learning</em>
+                <strong>Arduino</strong>
+                <span>Currently learning setup workflow and basic sensor projects.</span>
+              </span>
+            </button>
+          </div>
+
+          <div class="tree-focus-panel" id="treeFocusPanel" aria-live="polite">
+            <div class="tree-focus-head">
+              <span class="tree-focus-label">Node Scan</span>
+              <span class="tree-focus-status" id="treeFocusStatus">Currently Learning</span>
+            </div>
+
+            <div class="tree-focus-body">
+              <div class="tree-focus-copy">
+                <strong id="treeFocusTitle">Technology</strong>
+                <p id="treeFocusDescription">Current learning base across web development, cybersecurity, and embedded systems.</p>
+              </div>
+
+              <div class="tree-focus-meta">
+                <span class="tree-focus-chip" id="treeFocusBranch">Core Path</span>
+                <span class="tree-focus-chip" id="treeFocusType">Core Node</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="projects" class="section-pad">
       <div class="container">
         <div class="section-head reveal">
@@ -364,8 +599,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
