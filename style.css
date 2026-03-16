@@ -3309,6 +3309,286 @@ textarea:focus-visible {
   }
 }
 
+@media (max-width: 520px) {
+  :root {
+    --header-height: 72px;
+  }
+
+  .container {
+    width: min(100%, calc(100vw - 22px));
+  }
+
+  .section-pad {
+    padding: 68px 0;
+  }
+
+  .nav-wrap {
+    gap: 10px;
+  }
+
+  .brand {
+    gap: 8px;
+    font-size: 1rem;
+  }
+
+  .brand img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .nav-actions {
+    gap: 8px;
+  }
+
+  .theme-toggle,
+  .nav-toggle {
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  .theme-toggle {
+    width: 40px;
+  }
+
+  .hero,
+  .page-hero {
+    padding-top: 46px;
+  }
+
+  .section-head {
+    margin-bottom: 26px;
+  }
+
+  .section-head h2,
+  .hero-copy h1,
+  .page-hero-copy h1 {
+    font-size: clamp(1.9rem, 9vw, 2.55rem);
+    line-height: 1.08;
+    margin-bottom: 14px;
+  }
+
+  .hero-copy .lead,
+  .page-hero-copy .lead {
+    font-size: 0.95rem;
+    margin-bottom: 22px;
+  }
+
+  .hero-cta,
+  .contact-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-cta .btn,
+  .contact-cta-row .btn,
+  .contact-card button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hero-tags {
+    gap: 8px;
+  }
+
+  .hero-tags li {
+    font-size: 0.76rem;
+    padding: 7px 10px;
+  }
+
+  .photo-wrap {
+    padding: 12px;
+  }
+
+  .hero-meta {
+    padding: 16px 14px 18px;
+  }
+
+  .hero-meta h2 {
+    font-size: 1.26rem;
+  }
+
+  .summary-profile {
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .summary-profile img {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+  }
+
+  .timeline-rail {
+    left: 25px;
+  }
+
+  .timeline-item {
+    grid-template-columns: 60px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .timeline-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+  }
+
+  .timeline-card {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .timeline-copy h3 {
+    font-size: 1.14rem;
+  }
+
+  .orbit-system {
+    --orbit-radius: 132px;
+    width: min(100%, 304px);
+  }
+
+  .orbit-core {
+    width: 114px;
+    height: 114px;
+  }
+
+  .orbit-core-mark {
+    font-size: 0.94rem;
+  }
+
+  .orbit-tech-card {
+    width: 72px;
+    min-height: 72px;
+    padding: 9px;
+  }
+
+  .orbit-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.28rem;
+  }
+
+  .skill-tree-stage {
+    min-height: 1090px;
+  }
+
+  .tree-node {
+    min-width: 96px;
+    padding: 10px;
+  }
+
+  .tree-node-branch {
+    min-width: 122px;
+  }
+
+  .tree-node-core {
+    width: 132px;
+    min-width: 132px;
+    min-height: 132px;
+    padding: 16px;
+  }
+
+  .tree-node-core .tree-node-icon {
+    width: 52px;
+    height: 52px;
+    font-size: 1.32rem;
+  }
+
+  .tree-node-core .tree-node-title {
+    font-size: 0.84rem;
+  }
+
+  .tree-tooltip,
+  .tree-node-tooltip-right .tree-tooltip,
+  .tree-node-tooltip-left .tree-tooltip,
+  .tree-node-tooltip-top .tree-tooltip {
+    min-width: 148px;
+    max-width: 164px;
+  }
+
+  .tree-node-html {
+    left: 18%;
+  }
+
+  .tree-node-javascript {
+    left: 82%;
+  }
+
+  .project-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .project-top span {
+    font-size: 0.68rem;
+  }
+
+  .contact-card {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    width: min(100%, calc(100vw - 18px));
+  }
+
+  .brand span {
+    font-size: 0.94rem;
+  }
+
+  .section-head h2,
+  .hero-copy h1,
+  .page-hero-copy h1 {
+    font-size: clamp(1.76rem, 8.8vw, 2.25rem);
+  }
+
+  .hero-copy .lead,
+  .page-hero-copy .lead {
+    font-size: 0.92rem;
+  }
+
+  .hero-tags li {
+    font-size: 0.72rem;
+    padding: 6px 9px;
+  }
+
+  .summary-profile {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .summary-profile img {
+    width: 72px;
+    height: 72px;
+  }
+
+  .orbit-system {
+    --orbit-radius: 122px;
+    width: min(100%, 286px);
+  }
+
+  .skill-tree-stage {
+    min-height: 1130px;
+  }
+
+  .tree-node {
+    min-width: 92px;
+    padding: 9px;
+  }
+
+  .tree-node-branch {
+    min-width: 116px;
+  }
+
+  .tree-node-html {
+    left: 16%;
+  }
+
+  .tree-node-javascript {
+    left: 84%;
+  }
+}
+
 @media (hover: none), (pointer: coarse) {
   .circuit-canvas {
     opacity: 0.68;
