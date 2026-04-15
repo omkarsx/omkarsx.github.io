@@ -38,6 +38,15 @@
   const journeyTimeline = document.getElementById("journeyTimeline");
   const timelineRailFill = document.getElementById("timelineRailFill");
   const timelineItems = Array.from(document.querySelectorAll(".timeline-item"));
+  const aiAssistant = document.getElementById("aiAssistant");
+  const aiAssistantToggle = document.getElementById("aiAssistantToggle");
+  const aiAssistantPanel = document.getElementById("aiAssistantPanel");
+  const aiAssistantClose = document.getElementById("aiAssistantClose");
+  const aiAssistantFeed = document.getElementById("aiAssistantFeed");
+  const aiAssistantQuick = document.getElementById("aiAssistantQuick");
+  const aiAssistantForm = document.getElementById("aiAssistantForm");
+  const aiAssistantInput = document.getElementById("aiAssistantInput");
+  const aiQuickButtons = Array.from(document.querySelectorAll(".ai-quick-btn"));
 
   const contactForm = document.getElementById("contactForm");
   const statusEl = document.getElementById("formStatus");
@@ -182,6 +191,660 @@
       closeNav();
     }
   });
+
+  if (
+    aiAssistant &&
+    aiAssistantToggle &&
+    aiAssistantPanel &&
+    aiAssistantClose &&
+    aiAssistantFeed &&
+    aiAssistantQuick &&
+    aiAssistantForm &&
+    aiAssistantInput
+  ) {
+    const aiAssistantSend = aiAssistantForm.querySelector(".ai-assistant-send");
+    const assistantPage = aiAssistant.dataset.page || (document.body.classList.contains("timeline-page") ? "timeline" : "home");
+    const assistantProjectCards = Array.from(document.querySelectorAll(".project-card"));
+    const assistantProjectSummary = assistantProjectCards.length
+      ? assistantProjectCards.map((card) => {
+          const title = card.querySelector("h3")?.textContent?.trim() || "Project";
+          const category = card.querySelector(".project-top span")?.textContent?.trim() || "Portfolio";
+          const description = card.querySelector("p")?.textContent?.trim() || "";
+          const tags = Array.from(card.querySelectorAll(".chip-list li"))
+            .map((tag) => tag.textContent?.trim() || "")
+            .filter(Boolean);
+
+          return { title, category, description, tags };
+        })
+      : [
+          {
+            title: "AI Study Planner",
+            category: "Web",
+            description: "Beginner web app concept for making a flexible study plan from goals and available time.",
+            tags: ["HTML/CSS/JS", "API Practice", "Local Storage"]
+          },
+          {
+            title: "Smart Room Monitor",
+            category: "IoT",
+            description: "Learning project to read sensor values and display them on a simple web dashboard.",
+            tags: ["ESP32 Basics", "Sensor Logging", "Dashboard UI"]
+          },
+          {
+            title: "Interactive Tech Timeline",
+            category: "Web",
+            description: "Dedicated story page for the real engineering journey behind OmkarX.",
+            tags: ["Story UI", "Scroll Motion", "Portfolio Branding"]
+          }
+        ];
+    const assistantEmail = emailLink?.textContent?.trim() || "omkarshinde24.et@jspmuni.edu.in";
+    const assistantGithub = document.querySelector('.social-links a[href*="github.com"]')?.getAttribute("href") || "https://github.com/omkarsx";
+    const assistantLinkedin = document.querySelector('.social-links a[href*="linkedin.com"]')?.getAttribute("href") || "https://www.linkedin.com/in/omkar-shinde-14a288268";
+    const assistantInstagram = document.querySelector('.social-links a[href*="instagram.com"]')?.getAttribute("href") || "https://www.instagram.com/theomkar._";
+    const assistantApiKey = "AIzaSyBtAK4akv94Vp_IHRyLAiiIiC-6tpPlo2o";
+    const assistantRequestedModel = "gemini-1.5-flash";
+    const assistantModelCandidates = [
+      assistantRequestedModel,
+      "gemini-2.5-flash",
+      "gemini-2.0-flash"
+    ];
+    const assistantApiBase = "https://generativelanguage.googleapis.com/v1beta/models/";
+    const assistantSystemPromptBase = "You are OmkarX AI Assistant. You only answer questions related to Omkar Shinde, his portfolio, projects, skills, education, learning journey, goals, and contact details. Be professional, helpful, smart, and concise.";
+    const assistantWelcomeMessage = "Hello, I am OmkarX AI Assistant. Ask me about Omkar, projects, skills, learning journey, or contact info.";
+    const assistantAvatarMarkup = '<img class="ai-message-avatar-logo" src="images/omkarx-assistant-mark.png" alt="" width="640" height="640" decoding="async" aria-hidden="true">';
+    const assistantUnrelatedReply = "I am designed to help with OmkarX portfolio related questions.";
+    const assistantProjectLines = assistantProjectSummary.map((project) => {
+      const tagText = project.tags.length ? ` Focus areas: ${project.tags.join(", ")}.` : "";
+      return `- ${project.title} (${project.category}): ${project.description}${tagText}`;
+    });
+    const assistantContextLines = [
+      "Portfolio identity:",
+      "Omkar Shinde is a B.Tech Electronics and Telecommunication Engineering student at JSPM University, Pune, Maharashtra, India.",
+      "OmkarX is his personal portfolio and technical identity platform.",
+      "Brand philosophy: Learn It -> Build It -> Ship It.",
+      "Role label shown on the homepage: Student Builder.",
+      "",
+      "Education and journey:",
+      "Born in 2006 in Karjule Harya, Ahilyanagar district, Maharashtra, India.",
+      "Started exploring computers and PC gaming around 8th standard during 2018-2019.",
+      "Completed 10th grade from Shri Hareshwar Vidhyalay, Karjule Harya, Ahilyanagar in March 2022 with 75.80%.",
+      "Completed 12th Science from Shri Dhokeshwar Junior College, Takli Dhokeshwar in February 2024 with 65.33%.",
+      "Started B.Tech ENTC at JSPM University, Pune in 2024. Expected graduation: 2028.",
+      "Completed a Cybersecurity Virtual Internship with Palo Alto Networks in 2024.",
+      "Started building the OmkarX portfolio in 2025.",
+      "",
+      "Current learning focus:",
+      "Web development, cybersecurity fundamentals, embedded systems, Arduino basics, AI tools, and automation practice.",
+      "Programming languages shown: HTML, CSS, JavaScript (currently learning).",
+      "Tools shown: Git (learning), VS Code.",
+      "Hardware platform shown: Arduino (learning).",
+      "Cybersecurity topics shown: network security fundamentals and basic cybersecurity concepts.",
+      "",
+      "Favorite learning area:",
+      "Exploring real-world technology such as computers, cybersecurity, and building systems rather than limiting curiosity to a single classroom subject.",
+      "",
+      "Most challenging area:",
+      "Highly theoretical engineering subjects that focus heavily on formulas rather than practical applications.",
+      "",
+      "Future direction:",
+      "Dream role: Tech Innovator / Engineer.",
+      "Fields to master: Cybersecurity, Embedded Systems, Artificial Intelligence, Web Technologies.",
+      "Long-term goal: build innovative technologies and contribute to or create a startup that merges hardware and software to solve real-world problems.",
+      "",
+      "Projects shown on the portfolio:",
+      ...assistantProjectLines,
+      "",
+      "Contact details:",
+      `Email: ${assistantEmail}`,
+      `GitHub: ${assistantGithub}`,
+      `LinkedIn: ${assistantLinkedin}`,
+      `Instagram: ${assistantInstagram}`
+    ];
+    const assistantSystemPrompt = [
+      assistantSystemPromptBase,
+      "",
+      `If a user asks anything unrelated, reply exactly: ${assistantUnrelatedReply}`,
+      "",
+      "Only use the grounded portfolio context below. If the user asks for something not shown here, say that it is not currently shown on the portfolio instead of inventing details.",
+      "",
+      assistantContextLines.join("\n")
+    ].join("\n");
+    const assistantPortfolioPattern = /\b(omkar|shinde|omkarx|portfolio|project|projects|skills?|learning|journey|contact|email|linkedin|github|instagram|palo alto|cybersecurity|security|internship|jspm|entc|student|university|education|college|graduation|10th|12th|html|css|javascript|git|arduino|vs code|web development|embedded|iot|timeline|goal|future|brand|startup|study planner|room monitor)\b/i;
+    const assistantHelpPattern = /^(hi|hello|hey|help|what can you do|who are you|introduce yourself)\b/i;
+    const assistantUnrelatedPattern = /\b(weather|temperature|forecast|news|politics|election|stock|bitcoin|crypto|movie|movies|song|lyrics|recipe|food|restaurant|football|cricket|basketball|tennis|travel|flight|hotel|translate|translation|joke|poem|essay|algebra|equation|homework|anime|game guide)\b/i;
+    const assistantLinks = {
+      projects: assistantPage === "timeline" ? "index.html#projects" : "#projects",
+      skills: assistantPage === "timeline" ? "index.html#skills" : "#skills",
+      contact: assistantPage === "timeline" ? "index.html#contact" : "#contact",
+      timeline: assistantPage === "timeline" ? "#journeyTimeline" : "timeline.html",
+      home: assistantPage === "timeline" ? "index.html#home" : "#home"
+    };
+    let assistantInitialized = false;
+    let assistantBusy = false;
+    let assistantReplyQueue = Promise.resolve();
+    let assistantConversationHistory = [];
+    let assistantResolvedModel = "";
+
+    const wait = (duration) => new Promise((resolve) => {
+      window.setTimeout(resolve, duration);
+    });
+
+    const normalizeAssistantText = (text) => (text || "")
+      .replace(/\r/g, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
+    const scrollAssistantToLatest = () => {
+      aiAssistantFeed.scrollTo({
+        top: aiAssistantFeed.scrollHeight,
+        behavior: "smooth"
+      });
+    };
+
+    const setAssistantOpenState = (isOpen) => {
+      aiAssistant.classList.toggle("is-open", isOpen);
+      aiAssistantPanel.setAttribute("aria-hidden", String(!isOpen));
+      aiAssistantToggle.setAttribute("aria-expanded", String(isOpen));
+
+      if (isOpen) {
+        if (!assistantInitialized) {
+          const welcomeMessage = createAssistantMessage({
+            text: assistantWelcomeMessage,
+            meta: "OmkarX AI Assistant"
+          });
+          aiAssistantFeed.appendChild(welcomeMessage);
+          assistantInitialized = true;
+        }
+
+        window.setTimeout(() => {
+          aiAssistantInput.focus();
+          scrollAssistantToLatest();
+        }, 90);
+      }
+    };
+
+    const setAssistantBusyState = (isBusy) => {
+      assistantBusy = isBusy;
+      aiAssistantForm.classList.toggle("is-busy", isBusy);
+      aiAssistantInput.disabled = isBusy;
+
+      if (aiAssistantSend) {
+        aiAssistantSend.disabled = isBusy;
+      }
+
+      aiQuickButtons.forEach((button) => {
+        button.disabled = isBusy;
+      });
+    };
+
+    const createMessageShell = (author) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = `ai-message ai-message-${author}`;
+
+      const avatar = document.createElement("div");
+      avatar.className = "ai-message-avatar";
+      avatar.innerHTML = author === "assistant"
+        ? assistantAvatarMarkup
+        : '<i class="fa-solid fa-user" aria-hidden="true"></i>';
+
+      const bubble = document.createElement("div");
+      bubble.className = "ai-message-bubble";
+
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(bubble);
+
+      return { wrapper, bubble };
+    };
+
+    const createActionLinks = (actions) => {
+      if (!actions.length) {
+        return null;
+      }
+
+      const actionRow = document.createElement("div");
+      actionRow.className = "ai-message-actions";
+
+      actions.forEach((action) => {
+        const link = document.createElement("a");
+        link.href = action.href;
+        link.textContent = action.label;
+
+        if (/^https?:/i.test(action.href)) {
+          link.target = "_blank";
+          link.rel = "noopener";
+        }
+
+        actionRow.appendChild(link);
+      });
+
+      return actionRow;
+    };
+
+    const createAssistantMessage = ({ text, meta = "OmkarX AI Assistant", actions = [] }) => {
+      const { wrapper, bubble } = createMessageShell("assistant");
+      const content = document.createElement("p");
+      content.textContent = text;
+      bubble.appendChild(content);
+
+      if (actions.length) {
+        const actionRow = createActionLinks(actions);
+        if (actionRow) {
+          bubble.appendChild(actionRow);
+        }
+      }
+
+      const metaLine = document.createElement("div");
+      metaLine.className = "ai-message-meta";
+      metaLine.textContent = meta;
+      bubble.appendChild(metaLine);
+
+      return wrapper;
+    };
+
+    const addUserMessage = (text) => {
+      const { wrapper, bubble } = createMessageShell("user");
+      const content = document.createElement("p");
+      content.textContent = text;
+      bubble.appendChild(content);
+      aiAssistantFeed.appendChild(wrapper);
+      scrollAssistantToLatest();
+    };
+
+    const addTypingIndicator = () => {
+      const { wrapper, bubble } = createMessageShell("assistant");
+      const typing = document.createElement("div");
+      typing.className = "ai-typing";
+      typing.innerHTML = "<span></span><span></span><span></span>";
+      bubble.appendChild(typing);
+      aiAssistantFeed.appendChild(wrapper);
+      scrollAssistantToLatest();
+      return wrapper;
+    };
+
+    const typeAssistantReply = ({ text, meta, actions, typingIndicator = null }) => new Promise((resolve) => {
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+
+      const { wrapper, bubble } = createMessageShell("assistant");
+      const content = document.createElement("p");
+      const safeText = normalizeAssistantText(text);
+      bubble.appendChild(content);
+      aiAssistantFeed.appendChild(wrapper);
+
+      let index = 0;
+      const stepDelay = safeText.length > 220 ? 6 : safeText.length > 120 ? 8 : 12;
+      const step = () => {
+        content.textContent = safeText.slice(0, index);
+        scrollAssistantToLatest();
+
+        if (index >= safeText.length) {
+          if (actions.length) {
+            const actionRow = createActionLinks(actions);
+            if (actionRow) {
+              bubble.appendChild(actionRow);
+            }
+          }
+
+          const metaLine = document.createElement("div");
+          metaLine.className = "ai-message-meta";
+          metaLine.textContent = meta;
+          bubble.appendChild(metaLine);
+          scrollAssistantToLatest();
+          resolve();
+          return;
+        }
+
+        index += 1;
+        window.setTimeout(step, stepDelay);
+      };
+
+      step();
+    });
+
+    const pushAssistantHistory = (role, text) => {
+      assistantConversationHistory.push({
+        role,
+        parts: [{ text }]
+      });
+
+      if (assistantConversationHistory.length > 14) {
+        assistantConversationHistory = assistantConversationHistory.slice(-14);
+      }
+    };
+
+    const buildAssistantActions = (question, responseText) => {
+      const normalized = `${question} ${responseText}`.toLowerCase();
+      const actions = [];
+      const seen = new Set();
+
+      const addAction = (label, href) => {
+        if (!href || seen.has(label)) {
+          return;
+        }
+
+        seen.add(label);
+        actions.push({ label, href });
+      };
+
+      if (responseText === assistantUnrelatedReply) {
+        return actions;
+      }
+
+      if (/(project|projects|study planner|room monitor|timeline)/.test(normalized)) {
+        addAction("View Projects", assistantLinks.projects);
+        addAction("Open Timeline", assistantLinks.timeline);
+      }
+
+      if (/(skill|skills|learning|learn|html|css|javascript|git|arduino|cybersecurity|embedded)/.test(normalized)) {
+        addAction("Learning Section", assistantLinks.skills);
+        addAction("Journey Page", assistantLinks.timeline);
+      }
+
+      if (/(about|omkar|journey|education|student|jspm|entc|internship|palo alto)/.test(normalized)) {
+        addAction("About Section", assistantLinks.home.replace("#home", "#about"));
+        addAction("Journey Page", assistantLinks.timeline);
+      }
+
+      if (/(contact|email|github|linkedin|instagram|reach|connect)/.test(normalized)) {
+        addAction("Email", `mailto:${assistantEmail}`);
+        addAction("GitHub", assistantGithub);
+        addAction("LinkedIn", assistantLinkedin);
+      }
+
+      return actions;
+    };
+
+    const getFallbackAssistantResponse = (question) => {
+      const normalized = question.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+      const projectTitles = assistantProjectSummary.map((project) => project.title).join(", ");
+
+      if (/(project|projects|work|portfolio project|show|build)/.test(normalized) && !/(skill|contact|about|learn)/.test(normalized)) {
+        return {
+          text: `Current highlighted projects are ${projectTitles}. The projects section also shows the focus areas for each build, including web and IoT work.`,
+          meta: "OmkarX AI Assistant",
+          actions: buildAssistantActions(question, "projects")
+        };
+      }
+
+      if (/(skill|skills|tech|stack|tools|arduino|html|css|javascript|git|vs code)/.test(normalized)) {
+        return {
+          text: "Skills currently shown on OmkarX are HTML, CSS, JavaScript (currently learning), Git (learning), VS Code, Arduino (learning), network security fundamentals, and basic cybersecurity concepts.",
+          meta: "OmkarX AI Assistant",
+          actions: buildAssistantActions(question, "skills learning html css javascript git arduino cybersecurity")
+        };
+      }
+
+      if (/(learn|learning|study|currently learning|cybersecurity|embedded|web development|ai|automation)/.test(normalized)) {
+        return {
+          text: "Right now the learning focus is web development, cybersecurity fundamentals, embedded systems, Arduino basics, and AI or automation practice through practical builds.",
+          meta: "OmkarX AI Assistant",
+          actions: buildAssistantActions(question, "learning journey cybersecurity embedded systems")
+        };
+      }
+
+      if (/(about|omkar|who is|who are|background|journey|student|jspm|entc|internship|palo alto|education)/.test(normalized)) {
+        return {
+          text: "Omkar Shinde is a B.Tech Electronics and Telecommunication Engineering student at JSPM University, Pune. He is building OmkarX with the philosophy Learn It -> Build It -> Ship It, and completed a Cybersecurity Virtual Internship with Palo Alto Networks.",
+          meta: "OmkarX AI Assistant",
+          actions: buildAssistantActions(question, "about omkar journey education internship")
+        };
+      }
+
+      if (/(contact|email|linkedin|github|reach|message|connect|instagram)/.test(normalized)) {
+        return {
+          text: `You can contact Omkar by email at ${assistantEmail}. GitHub, LinkedIn, and Instagram links are also available on the portfolio.`,
+          meta: "OmkarX AI Assistant",
+          actions: buildAssistantActions(question, "contact email github linkedin instagram")
+        };
+      }
+
+      if (assistantHelpPattern.test(normalized)) {
+        return {
+          text: "I can help with Omkar's profile, projects, skills, learning journey, education, internship, future goals, and contact details.",
+          meta: "OmkarX AI Assistant",
+          actions: [
+            { label: "Show Projects", href: assistantLinks.projects },
+            { label: "My Skills", href: assistantLinks.skills },
+            { label: "Contact Info", href: assistantLinks.contact }
+          ]
+        };
+      }
+
+      return {
+        text: "I can help with Omkar's profile, projects, skills, education, learning journey, and contact details. Try asking about Omkar, projects, skills, or contact info.",
+        meta: "OmkarX AI Assistant",
+        actions: [
+          { label: "Show Projects", href: assistantLinks.projects },
+          { label: "My Skills", href: assistantLinks.skills },
+          { label: "Contact Info", href: assistantLinks.contact }
+        ]
+      };
+    };
+
+    const extractAssistantText = (responseData) => {
+      const parts = responseData?.candidates?.[0]?.content?.parts;
+      if (!Array.isArray(parts)) {
+        return "";
+      }
+
+      return normalizeAssistantText(parts
+        .map((part) => (typeof part?.text === "string" ? part.text : ""))
+        .join(""));
+    };
+
+    const isLikelyUnrelatedQuestion = (question) => {
+      const normalized = question.trim();
+      return assistantUnrelatedPattern.test(normalized)
+        && !assistantPortfolioPattern.test(normalized)
+        && !assistantHelpPattern.test(normalized);
+    };
+
+    const extractErrorMessage = async (response) => {
+      try {
+        const errorData = await response.json();
+        return errorData?.error?.message || `Request failed with status ${response.status}.`;
+      } catch (error) {
+        return `Request failed with status ${response.status}.`;
+      }
+    };
+
+    const shouldTryNextModel = (status, errorMessage, model) => {
+      if (assistantResolvedModel || model === assistantModelCandidates[assistantModelCandidates.length - 1]) {
+        return false;
+      }
+
+      return status === 404
+        || status === 429
+        || /not found|not supported|resource exhausted|quota/i.test(errorMessage);
+    };
+
+    const requestGeminiReply = async (question) => {
+      if (isLikelyUnrelatedQuestion(question)) {
+        return {
+          text: assistantUnrelatedReply,
+          meta: "Portfolio Scope",
+          actions: []
+        };
+      }
+
+      const contents = [
+        ...assistantConversationHistory,
+        {
+          role: "user",
+          parts: [{ text: question }]
+        }
+      ];
+
+      const payload = {
+        systemInstruction: {
+          parts: [
+            { text: assistantSystemPrompt }
+          ]
+        },
+        contents,
+        generationConfig: {
+          responseMimeType: "text/plain",
+          temperature: 0.4,
+          topP: 0.9,
+          topK: 32,
+          maxOutputTokens: 280
+        }
+      };
+
+      const modelsToTry = assistantResolvedModel
+        ? [assistantResolvedModel]
+        : assistantModelCandidates;
+
+      for (const model of modelsToTry) {
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => {
+          controller.abort();
+        }, 20000);
+
+        try {
+          const response = await fetch(`${assistantApiBase}${encodeURIComponent(model)}:generateContent`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-goog-api-key": assistantApiKey
+            },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+          });
+
+          window.clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            const errorMessage = await extractErrorMessage(response);
+
+            if (shouldTryNextModel(response.status, errorMessage, model)) {
+              continue;
+            }
+
+            throw new Error(errorMessage);
+          }
+
+          const responseData = await response.json();
+          const text = extractAssistantText(responseData);
+
+          if (!text) {
+            throw new Error("The AI assistant returned an empty response.");
+          }
+
+          assistantResolvedModel = model;
+          return {
+            text,
+            meta: "OmkarX AI Assistant",
+            actions: buildAssistantActions(question, text)
+          };
+        } catch (error) {
+          window.clearTimeout(timeoutId);
+          const isAbort = error?.name === "AbortError";
+          const message = isAbort
+            ? "The AI assistant is taking too long to respond. Please try again."
+            : (error.message || "The AI assistant is unavailable right now.");
+
+          if (!isAbort && shouldTryNextModel(0, message, model)) {
+            continue;
+          }
+
+          return getFallbackAssistantResponse(question);
+        }
+      }
+
+      return getFallbackAssistantResponse(question);
+    };
+
+    const submitAssistantQuestion = (question) => {
+      const cleanQuestion = question.trim();
+      if (!cleanQuestion || assistantBusy) {
+        return;
+      }
+
+      setAssistantOpenState(true);
+      addUserMessage(cleanQuestion);
+      pushAssistantHistory("user", cleanQuestion);
+      aiAssistantInput.value = "";
+
+      assistantReplyQueue = assistantReplyQueue.then(async () => {
+        setAssistantBusyState(true);
+        const typingIndicator = addTypingIndicator();
+        try {
+          const loadingStartedAt = performance.now();
+          const response = await requestGeminiReply(cleanQuestion);
+          const waitRemaining = Math.max(240 - (performance.now() - loadingStartedAt), 0);
+
+          if (waitRemaining > 0) {
+            await wait(waitRemaining);
+          }
+
+          pushAssistantHistory("model", response.text);
+
+          await typeAssistantReply({
+            ...response,
+            typingIndicator
+          });
+        } catch (error) {
+          typingIndicator.remove();
+          const fallbackResponse = getFallbackAssistantResponse(cleanQuestion);
+          pushAssistantHistory("model", fallbackResponse.text);
+          await typeAssistantReply(fallbackResponse);
+        } finally {
+          setAssistantBusyState(false);
+          aiAssistantInput.focus();
+        }
+      });
+    };
+
+    aiAssistantToggle.addEventListener("click", () => {
+      const willOpen = !aiAssistant.classList.contains("is-open");
+      setAssistantOpenState(willOpen);
+    });
+
+    aiAssistantClose.addEventListener("click", () => {
+      setAssistantOpenState(false);
+    });
+
+    aiQuickButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const question = button.dataset.question || button.textContent || "";
+        submitAssistantQuestion(question);
+      });
+    });
+
+    aiAssistantForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      submitAssistantQuestion(aiAssistantInput.value);
+    });
+
+    aiAssistantFeed.addEventListener("click", (event) => {
+      const link = event.target instanceof Element ? event.target.closest("a") : null;
+      if (!(link instanceof HTMLAnchorElement)) {
+        return;
+      }
+
+      const href = link.getAttribute("href") || "";
+      if (href.startsWith("#")) {
+        const target = document.querySelector(href);
+        if (!target) {
+          return;
+        }
+
+        event.preventDefault();
+        const offset = header ? header.offsetHeight : 0;
+        const targetTop = Math.max(target.getBoundingClientRect().top + window.scrollY - offset + 2, 0);
+        window.scrollTo({ top: targetTop, behavior: "smooth" });
+      }
+
+      setAssistantOpenState(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && aiAssistant.classList.contains("is-open")) {
+        setAssistantOpenState(false);
+      }
+    });
+  }
 
   if (circuitCanvas instanceof HTMLCanvasElement) {
     const circuitContext = circuitCanvas.getContext("2d");
@@ -1431,3 +2094,4 @@
     }
   });
 })();
+

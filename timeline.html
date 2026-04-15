@@ -505,6 +505,50 @@
     </div>
   </footer>
 
+  <div class="ai-assistant" id="aiAssistant" data-page="timeline">
+    <button class="ai-assistant-toggle" id="aiAssistantToggle" type="button" aria-expanded="false" aria-controls="aiAssistantPanel" aria-label="Open OmkarX AI Assistant">
+      <span class="ai-assistant-toggle-ring" aria-hidden="true"></span>
+      <img class="ai-assistant-toggle-logo" src="images/omkarx-assistant-mark.png" alt="" width="640" height="640" decoding="async" aria-hidden="true">
+    </button>
+
+    <section class="ai-assistant-panel" id="aiAssistantPanel" role="dialog" aria-modal="false" aria-labelledby="aiAssistantTitle" aria-hidden="true">
+      <header class="ai-assistant-header">
+        <div class="ai-assistant-brand">
+          <div class="ai-assistant-header-logo-wrap" aria-hidden="true">
+            <img class="ai-assistant-header-logo" src="images/omkarx-assistant-mark.png" alt="" width="640" height="640" decoding="async">
+          </div>
+
+          <div class="ai-assistant-title-wrap">
+            <p class="ai-assistant-kicker">Portfolio Guide</p>
+            <h2 id="aiAssistantTitle">OMKAR X AI Assistant</h2>
+          </div>
+        </div>
+
+        <button class="ai-assistant-close" id="aiAssistantClose" type="button" aria-label="Close assistant">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </button>
+      </header>
+
+      <div class="ai-assistant-feed" id="aiAssistantFeed" aria-live="polite"></div>
+
+      <div class="ai-assistant-quick" id="aiAssistantQuick">
+        <button type="button" class="ai-quick-btn" data-question="Show Projects">Show Projects</button>
+        <button type="button" class="ai-quick-btn" data-question="My Skills">My Skills</button>
+        <button type="button" class="ai-quick-btn" data-question="What am I learning?">What am I learning?</button>
+        <button type="button" class="ai-quick-btn" data-question="About Omkar">About Omkar</button>
+        <button type="button" class="ai-quick-btn" data-question="Contact Info">Contact Info</button>
+      </div>
+
+      <form class="ai-assistant-form" id="aiAssistantForm">
+        <label class="sr-only" for="aiAssistantInput">Ask the OmkarX assistant</label>
+        <input id="aiAssistantInput" name="assistantQuestion" type="text" placeholder="Ask about Omkar, projects, skills, or contact..." autocomplete="off">
+        <button type="submit" class="ai-assistant-send" aria-label="Send question">
+          <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+        </button>
+      </form>
+    </section>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
