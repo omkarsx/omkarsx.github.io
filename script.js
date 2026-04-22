@@ -248,10 +248,9 @@
       "gemini-2.0-flash"
     ];
     const assistantApiBase = "https://generativelanguage.googleapis.com/v1beta/models/";
-    const assistantSystemPromptBase = "You are OmkarX AI Assistant. You only answer questions related to Omkar Shinde, his portfolio, projects, skills, education, learning journey, goals, and contact details. Be professional, helpful, smart, and concise.";
-    const assistantWelcomeMessage = "Hello, I am OmkarX AI Assistant. Ask me about Omkar, projects, skills, learning journey, or contact info.";
+    const assistantSystemPromptBase = "You are OmkarX AI Assistant, a helpful general AI assistant on Omkar Shinde's portfolio website. Answer any normal question clearly and concisely. When the user asks about Omkar Shinde, OmkarX, the portfolio website, projects, skills, education, journey, goals, or contact details, prioritize the grounded portfolio context provided below and do not invent personal details. For general questions outside the portfolio, answer normally as a smart assistant.";
+    const assistantWelcomeMessage = "Hello, I am OmkarX AI Assistant. Ask me about OmkarX, projects, skills, technology, learning, or any general question.";
     const assistantAvatarMarkup = '<img class="ai-message-avatar-logo" src="images/omkarx-assistant-mark.png" alt="" width="640" height="640" decoding="async" aria-hidden="true">';
-    const assistantUnrelatedReply = "I am designed to help with OmkarX portfolio related questions.";
     const assistantProjectLines = assistantProjectSummary.map((project) => {
       const tagText = project.tags.length ? ` Focus areas: ${project.tags.join(", ")}.` : "";
       return `- ${project.title} (${project.category}): ${project.description}${tagText}`;
@@ -302,15 +301,13 @@
     const assistantSystemPrompt = [
       assistantSystemPromptBase,
       "",
-      `If a user asks anything unrelated, reply exactly: ${assistantUnrelatedReply}`,
-      "",
-      "Only use the grounded portfolio context below. If the user asks for something not shown here, say that it is not currently shown on the portfolio instead of inventing details.",
+      "Use the grounded portfolio context only for OmkarX or Omkar Shinde related questions. If a portfolio detail is not shown in the context, say it is not currently shown on the portfolio instead of guessing.",
+      "For non-portfolio questions, answer normally and keep the response useful, safe, and concise.",
       "",
       assistantContextLines.join("\n")
     ].join("\n");
-    const assistantPortfolioPattern = /\b(omkar|shinde|omkarx|portfolio|project|projects|skills?|learning|journey|contact|email|linkedin|github|instagram|palo alto|cybersecurity|security|internship|jspm|entc|student|university|education|college|graduation|10th|12th|html|css|javascript|git|arduino|vs code|web development|embedded|iot|timeline|goal|future|brand|startup|study planner|room monitor)\b/i;
     const assistantHelpPattern = /^(hi|hello|hey|help|what can you do|who are you|introduce yourself)\b/i;
-    const assistantUnrelatedPattern = /\b(weather|temperature|forecast|news|politics|election|stock|bitcoin|crypto|movie|movies|song|lyrics|recipe|food|restaurant|football|cricket|basketball|tennis|travel|flight|hotel|translate|translation|joke|poem|essay|algebra|equation|homework|anime|game guide)\b/i;
+    const assistantPortfolioIntentPattern = /\b(omkar|shinde|omkarx|portfolio|your|you|my skills|my projects|what am i learning|about omkar|contact info|contact|email|linkedin|github|instagram|jspm|entc|palo alto|internship|journey|timeline|student builder)\b/i;
     const assistantLinks = {
       projects: assistantPage === "timeline" ? "index.html#projects" : "#projects",
       skills: assistantPage === "timeline" ? "index.html#skills" : "#skills",
@@ -323,6 +320,7 @@
     let assistantReplyQueue = Promise.resolve();
     let assistantConversationHistory = [];
     let assistantResolvedModel = "";
+    let puterScriptPromise = null;
 
     const wait = (duration) => new Promise((resolve) => {
       window.setTimeout(resolve, duration);
@@ -526,10 +524,6 @@
         actions.push({ label, href });
       };
 
-      if (responseText === assistantUnrelatedReply) {
-        return actions;
-      }
-
       if (/(project|projects|study planner|room monitor|timeline)/.test(normalized)) {
         addAction("View Projects", assistantLinks.projects);
         addAction("Open Timeline", assistantLinks.timeline);
@@ -557,8 +551,9 @@
     const getFallbackAssistantResponse = (question) => {
       const normalized = question.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
       const projectTitles = assistantProjectSummary.map((project) => project.title).join(", ");
+      const isPortfolioIntent = assistantPortfolioIntentPattern.test(normalized);
 
-      if (/(project|projects|work|portfolio project|show|build)/.test(normalized) && !/(skill|contact|about|learn)/.test(normalized)) {
+      if (isPortfolioIntent && /(project|projects|work|portfolio project|show|build)/.test(normalized) && !/(skill|contact|about|learn)/.test(normalized)) {
         return {
           text: `Current highlighted projects are ${projectTitles}. The projects section also shows the focus areas for each build, including web and IoT work.`,
           meta: "OmkarX AI Assistant",
@@ -566,7 +561,7 @@
         };
       }
 
-      if (/(skill|skills|tech|stack|tools|arduino|html|css|javascript|git|vs code)/.test(normalized)) {
+      if (isPortfolioIntent && /(skill|skills|tech|stack|tools|arduino|html|css|javascript|git|vs code)/.test(normalized)) {
         return {
           text: "Skills currently shown on OmkarX are HTML, CSS, JavaScript (currently learning), Git (learning), VS Code, Arduino (learning), network security fundamentals, and basic cybersecurity concepts.",
           meta: "OmkarX AI Assistant",
@@ -574,7 +569,7 @@
         };
       }
 
-      if (/(learn|learning|study|currently learning|cybersecurity|embedded|web development|ai|automation)/.test(normalized)) {
+      if (isPortfolioIntent && /(learn|learning|study|currently learning|cybersecurity|embedded|web development|ai|automation)/.test(normalized)) {
         return {
           text: "Right now the learning focus is web development, cybersecurity fundamentals, embedded systems, Arduino basics, and AI or automation practice through practical builds.",
           meta: "OmkarX AI Assistant",
@@ -582,7 +577,7 @@
         };
       }
 
-      if (/(about|omkar|who is|who are|background|journey|student|jspm|entc|internship|palo alto|education)/.test(normalized)) {
+      if (isPortfolioIntent && /(about|omkar|who is|who are|background|journey|student|jspm|entc|internship|palo alto|education)/.test(normalized)) {
         return {
           text: "Omkar Shinde is a B.Tech Electronics and Telecommunication Engineering student at JSPM University, Pune. He is building OmkarX with the philosophy Learn It -> Build It -> Ship It, and completed a Cybersecurity Virtual Internship with Palo Alto Networks.",
           meta: "OmkarX AI Assistant",
@@ -590,7 +585,7 @@
         };
       }
 
-      if (/(contact|email|linkedin|github|reach|message|connect|instagram)/.test(normalized)) {
+      if (isPortfolioIntent && /(contact|email|linkedin|github|reach|message|connect|instagram)/.test(normalized)) {
         return {
           text: `You can contact Omkar by email at ${assistantEmail}. GitHub, LinkedIn, and Instagram links are also available on the portfolio.`,
           meta: "OmkarX AI Assistant",
@@ -600,7 +595,7 @@
 
       if (assistantHelpPattern.test(normalized)) {
         return {
-          text: "I can help with Omkar's profile, projects, skills, learning journey, education, internship, future goals, and contact details.",
+          text: "I can answer general questions and also help with Omkar's profile, projects, skills, learning journey, education, internship, future goals, and contact details.",
           meta: "OmkarX AI Assistant",
           actions: [
             { label: "Show Projects", href: assistantLinks.projects },
@@ -611,8 +606,8 @@
       }
 
       return {
-        text: "I can help with Omkar's profile, projects, skills, education, learning journey, and contact details. Try asking about Omkar, projects, skills, or contact info.",
-        meta: "OmkarX AI Assistant",
+        text: "The live AI service is busy right now. Please try the general question again in a moment. I can still help locally with OmkarX portfolio questions.",
+        meta: "AI Service Busy",
         actions: [
           { label: "Show Projects", href: assistantLinks.projects },
           { label: "My Skills", href: assistantLinks.skills },
@@ -630,13 +625,6 @@
       return normalizeAssistantText(parts
         .map((part) => (typeof part?.text === "string" ? part.text : ""))
         .join(""));
-    };
-
-    const isLikelyUnrelatedQuestion = (question) => {
-      const normalized = question.trim();
-      return assistantUnrelatedPattern.test(normalized)
-        && !assistantPortfolioPattern.test(normalized)
-        && !assistantHelpPattern.test(normalized);
     };
 
     const extractErrorMessage = async (response) => {
@@ -658,13 +646,110 @@
         || /not found|not supported|resource exhausted|quota/i.test(errorMessage);
     };
 
-    const requestGeminiReply = async (question) => {
-      if (isLikelyUnrelatedQuestion(question)) {
-        return {
-          text: assistantUnrelatedReply,
-          meta: "Portfolio Scope",
-          actions: []
+    const ensurePuterReady = () => {
+      if (window.puter?.ai?.chat) {
+        return Promise.resolve(true);
+      }
+
+      if (!/^https?:$/.test(window.location.protocol)) {
+        return Promise.resolve(false);
+      }
+
+      if (puterScriptPromise) {
+        return puterScriptPromise;
+      }
+
+      puterScriptPromise = new Promise((resolve) => {
+        const script = document.createElement("script");
+        script.src = "https://js.puter.com/v2/";
+        script.async = true;
+        script.onload = () => {
+          resolve(Boolean(window.puter?.ai?.chat));
         };
+        script.onerror = () => {
+          resolve(false);
+        };
+        document.head.appendChild(script);
+      });
+
+      return puterScriptPromise;
+    };
+
+    const buildPuterMessages = (question) => [
+      {
+        role: "system",
+        content: assistantSystemPrompt
+      },
+      ...assistantConversationHistory.map((message) => ({
+        role: message.role === "model" ? "assistant" : "user",
+        content: message.parts.map((part) => part.text || "").join("")
+      })),
+      {
+        role: "user",
+        content: question
+      }
+    ];
+
+    const extractPuterText = (response) => {
+      if (typeof response === "string") {
+        return normalizeAssistantText(response);
+      }
+
+      if (typeof response?.text === "string") {
+        return normalizeAssistantText(response.text);
+      }
+
+      const content = response?.message?.content;
+
+      if (typeof content === "string") {
+        return normalizeAssistantText(content);
+      }
+
+      if (Array.isArray(content)) {
+        return normalizeAssistantText(content
+          .map((item) => {
+            if (typeof item === "string") {
+              return item;
+            }
+
+            return item?.text || "";
+          })
+          .join(""));
+      }
+
+      return "";
+    };
+
+    const requestPuterReply = async (question) => {
+      const puterReady = await ensurePuterReady();
+
+      if (!puterReady) {
+        return null;
+      }
+
+      try {
+        const response = await window.puter.ai.chat(buildPuterMessages(question));
+        const text = extractPuterText(response);
+
+        if (!text) {
+          return null;
+        }
+
+        return {
+          text,
+          meta: "OmkarX AI Assistant",
+          actions: buildAssistantActions(question, text)
+        };
+      } catch (error) {
+        return null;
+      }
+    };
+
+    const requestGeminiReply = async (question) => {
+      const puterReply = await requestPuterReply(question);
+
+      if (puterReply) {
+        return puterReply;
       }
 
       const contents = [
@@ -748,8 +833,20 @@
             continue;
           }
 
+          const puterFallback = await requestPuterReply(question);
+
+          if (puterFallback) {
+            return puterFallback;
+          }
+
           return getFallbackAssistantResponse(question);
         }
+      }
+
+      const puterFallback = await requestPuterReply(question);
+
+      if (puterFallback) {
+        return puterFallback;
       }
 
       return getFallbackAssistantResponse(question);
