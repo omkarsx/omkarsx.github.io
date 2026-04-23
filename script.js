@@ -606,8 +606,8 @@
       }
 
       return {
-        text: "The live AI service is busy right now. Please try the general question again in a moment. I can still help locally with OmkarX portfolio questions.",
-        meta: "AI Service Busy",
+        text: "I cannot answer this general question right now because the live AI service is unavailable. I will not redirect you away from OmkarX. Please try again later, or ask about OmkarX, projects, skills, journey, or contact details.",
+        meta: "Live AI Unavailable",
         actions: [
           { label: "Show Projects", href: assistantLinks.projects },
           { label: "My Skills", href: assistantLinks.skills },
@@ -675,6 +675,24 @@
       return puterScriptPromise;
     };
 
+    const canUsePuterWithoutRedirect = async () => {
+      const puterReady = await ensurePuterReady();
+
+      if (!puterReady) {
+        return false;
+      }
+
+      if (!window.puter?.auth?.isSignedIn) {
+        return false;
+      }
+
+      try {
+        return Boolean(await window.puter.auth.isSignedIn());
+      } catch (error) {
+        return false;
+      }
+    };
+
     const buildPuterMessages = (question) => [
       {
         role: "system",
@@ -721,9 +739,9 @@
     };
 
     const requestPuterReply = async (question) => {
-      const puterReady = await ensurePuterReady();
+      const puterAllowed = await canUsePuterWithoutRedirect();
 
-      if (!puterReady) {
+      if (!puterAllowed) {
         return null;
       }
 
