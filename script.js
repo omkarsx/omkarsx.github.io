@@ -48,6 +48,7 @@
   const aiAssistantInput = document.getElementById("aiAssistantInput");
   const aiQuickButtons = Array.from(document.querySelectorAll(".ai-quick-btn"));
   const heroTypingWord = document.getElementById("heroTypingWord");
+  const cursorGlow = document.getElementById("cursorGlow");
 
   const contactForm = document.getElementById("contactForm");
   const statusEl = document.getElementById("formStatus");
@@ -108,6 +109,58 @@
       };
 
       window.setTimeout(typeHeroWord, 900);
+    }
+  }
+
+  if (cursorGlow) {
+    const cursorMedia = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+    if (cursorMedia.matches) {
+      const cursorState = {
+        targetX: window.innerWidth / 2,
+        targetY: window.innerHeight / 2,
+        currentX: window.innerWidth / 2,
+        currentY: window.innerHeight / 2,
+        visible: false,
+        frameId: 0
+      };
+      const interactiveSelector = "a, button, input, textarea, select, .project-card, .hero-card, .skill-card, .timeline-card, .tree-node, .orbit-tech-card, .btn";
+
+      const renderCursorGlow = () => {
+        cursorState.currentX += (cursorState.targetX - cursorState.currentX) * 0.16;
+        cursorState.currentY += (cursorState.targetY - cursorState.currentY) * 0.16;
+        cursorGlow.style.transform = `translate3d(${cursorState.currentX}px, ${cursorState.currentY}px, 0) translate(-50%, -50%)`;
+        cursorState.frameId = window.requestAnimationFrame(renderCursorGlow);
+      };
+
+      const updateCursorHover = (target) => {
+        const isHovering = target instanceof Element && Boolean(target.closest(interactiveSelector));
+        cursorGlow.classList.toggle("is-hovering", isHovering);
+      };
+
+      window.addEventListener("pointermove", (event) => {
+        if (event.pointerType && event.pointerType !== "mouse") {
+          return;
+        }
+
+        cursorState.targetX = event.clientX;
+        cursorState.targetY = event.clientY;
+        updateCursorHover(event.target);
+
+        if (!cursorState.visible) {
+          cursorState.visible = true;
+          cursorGlow.classList.add("is-visible");
+        }
+
+        if (!cursorState.frameId) {
+          cursorState.frameId = window.requestAnimationFrame(renderCursorGlow);
+        }
+      }, { passive: true });
+
+      window.addEventListener("pointerleave", () => {
+        cursorState.visible = false;
+        cursorGlow.classList.remove("is-visible", "is-hovering");
+      });
     }
   }
 

@@ -346,6 +346,40 @@ ul {
   display: none;
 }
 
+.cursor-glow {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 155;
+  opacity: 0;
+  transform: translate3d(-50%, -50%, 0) scale(1);
+  background:
+    radial-gradient(circle, rgba(189, 240, 255, 0.72) 0%, rgba(78, 192, 255, 0.2) 38%, rgba(51, 211, 189, 0) 72%);
+  box-shadow:
+    0 0 18px rgba(78, 192, 255, 0.22),
+    0 0 42px rgba(51, 211, 189, 0.12);
+  mix-blend-mode: screen;
+  transition: opacity 0.22s ease, width 0.22s ease, height 0.22s ease, box-shadow 0.22s ease;
+  will-change: transform, opacity;
+}
+
+.cursor-glow.is-visible {
+  opacity: 0.42;
+}
+
+.cursor-glow.is-hovering {
+  width: 42px;
+  height: 42px;
+  opacity: 0.58;
+  box-shadow:
+    0 0 24px rgba(78, 192, 255, 0.34),
+    0 0 62px rgba(51, 211, 189, 0.18);
+}
+
 .section-head {
   margin-bottom: 34px;
 }
@@ -4262,6 +4296,10 @@ textarea:focus-visible {
 }
 
 @media (hover: none), (pointer: coarse) {
+  .cursor-glow {
+    display: none;
+  }
+
   .circuit-canvas {
     opacity: 0.68;
   }
