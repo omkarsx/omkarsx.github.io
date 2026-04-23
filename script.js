@@ -248,6 +248,7 @@
       "gemini-2.0-flash"
     ];
     const assistantApiBase = "https://generativelanguage.googleapis.com/v1beta/models/";
+    const assistantPollinationsApi = "https://text.pollinations.ai/openai";
     const assistantSystemPromptBase = "You are OmkarX AI Assistant, a helpful general AI assistant on Omkar Shinde's portfolio website. Answer any normal question clearly and concisely. When the user asks about Omkar Shinde, OmkarX, the portfolio website, projects, skills, education, journey, goals, or contact details, prioritize the grounded portfolio context provided below and do not invent personal details. For general questions outside the portfolio, answer normally as a smart assistant.";
     const assistantWelcomeMessage = "Hello, I am OmkarX AI Assistant. Ask me about OmkarX, projects, skills, technology, learning, or any general question.";
     const assistantAvatarMarkup = '<img class="ai-message-avatar-logo" src="images/omkarx-assistant-mark.png" alt="" width="640" height="640" decoding="async" aria-hidden="true">';
@@ -738,6 +739,42 @@
       return "";
     };
 
+    const requestPollinationsReply = async (question) => {
+      try {
+        const response = await fetch(assistantPollinationsApi, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "openai",
+            messages: buildPuterMessages(question),
+            temperature: 0.4,
+            max_tokens: 320
+          })
+        });
+
+        if (!response.ok) {
+          return null;
+        }
+
+        const responseData = await response.json();
+        const text = normalizeAssistantText(responseData?.choices?.[0]?.message?.content || "");
+
+        if (!text) {
+          return null;
+        }
+
+        return {
+          text,
+          meta: "OmkarX AI Assistant",
+          actions: buildAssistantActions(question, text)
+        };
+      } catch (error) {
+        return null;
+      }
+    };
+
     const requestPuterReply = async (question) => {
       const puterAllowed = await canUsePuterWithoutRedirect();
 
@@ -764,6 +801,12 @@
     };
 
     const requestGeminiReply = async (question) => {
+      const pollinationsReply = await requestPollinationsReply(question);
+
+      if (pollinationsReply) {
+        return pollinationsReply;
+      }
+
       const puterReply = await requestPuterReply(question);
 
       if (puterReply) {
