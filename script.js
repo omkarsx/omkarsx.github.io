@@ -47,6 +47,7 @@
   const aiAssistantForm = document.getElementById("aiAssistantForm");
   const aiAssistantInput = document.getElementById("aiAssistantInput");
   const aiQuickButtons = Array.from(document.querySelectorAll(".ai-quick-btn"));
+  const heroTypingWord = document.getElementById("heroTypingWord");
 
   const contactForm = document.getElementById("contactForm");
   const statusEl = document.getElementById("formStatus");
@@ -66,6 +67,48 @@
 
   if (yearEl) {
     yearEl.textContent = String(new Date().getFullYear());
+  }
+
+  if (heroTypingWord) {
+    const typingWords = ["Engineer.", "Builder.", "Learner.", "OmkarX."];
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reducedMotion) {
+      heroTypingWord.textContent = typingWords[typingWords.length - 1];
+    } else {
+      let wordIndex = 0;
+      let letterIndex = heroTypingWord.textContent.length;
+      let isDeleting = false;
+
+      const typeHeroWord = () => {
+        const currentWord = typingWords[wordIndex];
+        heroTypingWord.textContent = currentWord.slice(0, letterIndex);
+
+        if (!isDeleting && letterIndex < currentWord.length) {
+          letterIndex += 1;
+          window.setTimeout(typeHeroWord, 92);
+          return;
+        }
+
+        if (!isDeleting && letterIndex === currentWord.length) {
+          isDeleting = true;
+          window.setTimeout(typeHeroWord, 1050);
+          return;
+        }
+
+        if (isDeleting && letterIndex > 0) {
+          letterIndex -= 1;
+          window.setTimeout(typeHeroWord, 48);
+          return;
+        }
+
+        isDeleting = false;
+        wordIndex = (wordIndex + 1) % typingWords.length;
+        window.setTimeout(typeHeroWord, 260);
+      };
+
+      window.setTimeout(typeHeroWord, 900);
+    }
   }
 
   const updateThemeButton = (theme) => {
