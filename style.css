@@ -85,6 +85,32 @@
 
 html {
   scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.scroll-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  box-shadow: 0 0 10px rgba(78, 192, 255, 0.5);
 }
 
 body {
@@ -134,24 +160,6 @@ ul {
 
 .section-pad {
   padding: 96px 0;
-}
-
-.scroll-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  z-index: 200;
-  pointer-events: none;
-}
-
-.scroll-progress span {
-  display: block;
-  width: 0;
-  height: 100%;
-  background: linear-gradient(90deg, var(--brand), var(--brand-2));
-  box-shadow: 0 0 10px rgba(78, 192, 255, 0.5);
 }
 
 .page-glow {
