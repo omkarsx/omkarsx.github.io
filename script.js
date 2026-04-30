@@ -300,18 +300,169 @@
     });
   }
 
-  const closeNav = () => {
-    if (!nav || !navToggle) {
-      return;
-    }
+	  const closeNav = () => {
+	    if (!nav || !navToggle) {
+	      return;
+	    }
 
     nav.classList.remove("open");
     navToggle.setAttribute("aria-expanded", "false");
-    navToggle.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
-  };
+	    navToggle.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+	  };
 
-  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener("click", (event) => {
+	  if (nav) {
+	    const navLinks = Array.from(nav.querySelectorAll("a"));
+	    const isTimelinePage = document.body.classList.contains("timeline-page");
+	    const sectionTargets = [
+	      { key: "home", navHash: "#home", elements: [document.getElementById("home")] },
+	      { key: "about", navHash: "#about", elements: [document.getElementById("about")] },
+	      {
+	        key: "learning",
+	        navHash: "#skills",
+	        elements: [
+	          document.getElementById("skills"),
+	          document.getElementById("tech-stack"),
+	          document.getElementById("skill-tree")
+	        ]
+	      },
+	      { key: "projects", navHash: "#projects", elements: [document.getElementById("projects")] },
+	      { key: "contact", navHash: "#contact", elements: [document.getElementById("contact")] },
+	      {
+	        key: "journey",
+	        navHash: "#journeyTimeline",
+	        elements: [
+	          document.getElementById("journeyTimeline"),
+	          document.querySelector(".timeline-section"),
+	          document.querySelector(".page-hero")
+	        ]
+	      }
+	    ].map((section) => ({
+	      ...section,
+	      elements: section.elements.filter(Boolean)
+	    })).filter((section) => section.elements.length);
+	    let activeNavHash = "";
+	    let navFrame = 0;
+
+	    const getNavHash = (link) => {
+	      const href = link.getAttribute("href") || "";
+
+	      if (href.startsWith("#")) {
+	        return href;
+	      }
+
+	      try {
+	        const url = new URL(href, window.location.href);
+	        return url.pathname === window.location.pathname ? url.hash : "";
+	      } catch (error) {
+	        return "";
+	      }
+	    };
+
+	    const moveNavUnderline = (activeLink) => {
+	      if (!activeLink || window.innerWidth <= 860) {
+	        nav.style.setProperty("--nav-underline-w", "0px");
+	        return;
+	      }
+
+	      const navRect = nav.getBoundingClientRect();
+	      const linkRect = activeLink.getBoundingClientRect();
+	      nav.style.setProperty("--nav-underline-x", `${Math.round(linkRect.left - navRect.left)}px`);
+	      nav.style.setProperty("--nav-underline-w", `${Math.round(linkRect.width)}px`);
+	    };
+
+	    const setActiveNavLink = (navHash) => {
+	      if (!navHash || navHash === activeNavHash) {
+	        if (activeNavHash) {
+	          moveNavUnderline(navLinks.find((link) => getNavHash(link) === activeNavHash));
+	        }
+	        return;
+	      }
+
+	      activeNavHash = navHash;
+	      let activeLink = null;
+
+	      navLinks.forEach((link) => {
+	        const isActive = getNavHash(link) === navHash;
+	        link.classList.toggle("is-active", isActive);
+
+	        if (isActive) {
+	          activeLink = link;
+	          link.setAttribute("aria-current", link.classList.contains("is-current") ? "page" : "location");
+	        } else if (!link.classList.contains("is-current")) {
+	          link.removeAttribute("aria-current");
+	        }
+	      });
+
+	      nav.classList.toggle("has-active", Boolean(activeLink));
+	      moveNavUnderline(activeLink);
+	    };
+
+	    const getCurrentNavHash = () => {
+	      if (isTimelinePage) {
+	        return "#journeyTimeline";
+	      }
+
+	      const viewportTop = header ? header.offsetHeight : 0;
+	      const viewportBottom = window.innerHeight;
+	      const focusLine = viewportTop + (viewportBottom - viewportTop) * 0.4;
+	      let bestSection = null;
+	      let bestScore = Number.NEGATIVE_INFINITY;
+
+	      sectionTargets.forEach((section) => {
+	        if (section.key === "journey") {
+	          return;
+	        }
+
+	        section.elements.forEach((element) => {
+	          const rect = element.getBoundingClientRect();
+	          const visibleHeight = Math.min(rect.bottom, viewportBottom) - Math.max(rect.top, viewportTop);
+
+	          if (visibleHeight <= 0) {
+	            return;
+	          }
+
+	          const sectionCenter = rect.top + rect.height / 2;
+	          const distance = Math.abs(sectionCenter - focusLine);
+	          const score = visibleHeight - distance * 0.22;
+
+	          if (score > bestScore) {
+	            bestScore = score;
+	            bestSection = section;
+	          }
+	        });
+	      });
+
+	      return bestSection?.navHash || "#home";
+	    };
+
+	    const updateActiveNav = () => {
+	      navFrame = 0;
+	      setActiveNavLink(getCurrentNavHash());
+	    };
+
+	    const requestActiveNavUpdate = () => {
+	      if (!navFrame) {
+	        navFrame = window.requestAnimationFrame(updateActiveNav);
+	      }
+	    };
+
+	    navLinks.forEach((link) => {
+	      link.addEventListener("click", () => {
+	        const navHash = getNavHash(link);
+
+	        if (navHash) {
+	          setActiveNavLink(navHash);
+	        }
+	      });
+	    });
+
+	    requestActiveNavUpdate();
+	    window.addEventListener("scroll", requestActiveNavUpdate, { passive: true });
+	    window.addEventListener("resize", requestActiveNavUpdate);
+	  }
+	
+	  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+	    anchor.addEventListener("click", (event) => {
       const href = anchor.getAttribute("href");
       if (!href || href === "#") {
         return;

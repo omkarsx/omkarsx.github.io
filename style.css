@@ -242,16 +242,39 @@ ul {
 }
 
 .site-nav {
+  --nav-underline-x: 0px;
+  --nav-underline-w: 0px;
   display: flex;
   align-items: center;
   gap: 28px;
+  position: relative;
 }
 
 .site-nav a {
   color: var(--muted);
   font-weight: 600;
-  transition: color 0.2s ease;
+  transition: color 0.22s ease, transform 0.22s ease, text-shadow 0.22s ease;
   position: relative;
+}
+
+.site-nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: var(--nav-underline-w);
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  box-shadow: 0 0 14px rgba(78, 192, 255, 0.42);
+  opacity: 0;
+  transform: translate3d(var(--nav-underline-x), 0, 0);
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), width 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+  pointer-events: none;
+}
+
+.site-nav.has-active::after {
+  opacity: 1;
 }
 
 .nav-journey-link {
@@ -298,8 +321,10 @@ ul {
 }
 
 .site-nav a:hover,
-.site-nav a:focus-visible {
+.site-nav a:focus-visible,
+.site-nav a.is-active {
   color: var(--text);
+  text-shadow: 0 0 14px rgba(78, 192, 255, 0.24);
 }
 
 .nav-journey-link:hover,
@@ -314,11 +339,16 @@ ul {
   transform: scaleX(1);
 }
 
+.site-nav.has-active a::after {
+  display: none;
+}
+
 .nav-journey-link::after {
   display: none;
 }
 
-.nav-journey-link.is-current {
+.nav-journey-link.is-current,
+.nav-journey-link.is-active {
   border-color: rgba(51, 211, 189, 0.62);
   background:
     linear-gradient(135deg, rgba(51, 211, 189, 0.24), rgba(78, 192, 255, 0.16)),
@@ -3643,13 +3673,27 @@ textarea:focus-visible {
     pointer-events: auto;
   }
 
-  .site-nav a::after {
-    display: none;
-  }
+	  .site-nav a::after {
+	    display: none;
+	  }
 
-  .theme-toggle span {
-    display: none;
-  }
+	  .site-nav::after {
+	    display: none;
+	  }
+
+	  .site-nav a {
+	    width: 100%;
+	  }
+
+	  .site-nav a.is-active:not(.nav-journey-link) {
+	    color: var(--title);
+	    box-shadow: inset 2px 0 0 var(--brand-2);
+	    text-shadow: 0 0 12px rgba(78, 192, 255, 0.22);
+	  }
+	
+	  .theme-toggle span {
+	    display: none;
+	  }
 
   .theme-toggle {
     width: 44px;
