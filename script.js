@@ -415,16 +415,190 @@
     let assistantInitialized = false;
     let assistantBusy = false;
     let assistantReplyQueue = Promise.resolve();
-    let assistantConversationHistory = [];
-    let assistantResolvedModel = "";
-    let puterScriptPromise = null;
+	    let assistantConversationHistory = [];
+	    let assistantResolvedModel = "";
+	    let puterScriptPromise = null;
+	    const assistantPositionKey = "omkarx-assistant-toggle-position";
+	    const assistantDragDelay = 420;
+	    const assistantDragMargin = 8;
+	    let assistantDragTimer = 0;
+	    let assistantDragState = null;
+	    let assistantTogglePosition = null;
+	    let assistantSuppressToggleClickUntil = 0;
+	
+	    const wait = (duration) => new Promise((resolve) => {
+	      window.setTimeout(resolve, duration);
+	    });
 
-    const wait = (duration) => new Promise((resolve) => {
-      window.setTimeout(resolve, duration);
-    });
+	    const clearAssistantDragTimer = () => {
+	      if (assistantDragTimer) {
+	        window.clearTimeout(assistantDragTimer);
+	        assistantDragTimer = 0;
+	      }
+	    };
 
-    const normalizeAssistantText = (text) => (text || "")
-      .replace(/\r/g, "")
+	    const getAssistantToggleSize = () => {
+	      const rect = aiAssistantToggle.getBoundingClientRect();
+	      return {
+	        width: rect.width || aiAssistantToggle.offsetWidth || 64,
+	        height: rect.height || aiAssistantToggle.offsetHeight || 64
+	      };
+	    };
+
+	    const clampAssistantTogglePosition = (left, top) => {
+	      const { width, height } = getAssistantToggleSize();
+	      const maxLeft = Math.max(assistantDragMargin, window.innerWidth - width - assistantDragMargin);
+	      const maxTop = Math.max(assistantDragMargin, window.innerHeight - height - assistantDragMargin);
+
+	      return {
+	        left: Math.min(Math.max(left, assistantDragMargin), maxLeft),
+	        top: Math.min(Math.max(top, assistantDragMargin), maxTop)
+	      };
+	    };
+
+	    const saveAssistantTogglePosition = () => {
+	      if (!assistantTogglePosition) {
+	        return;
+	      }
+
+	      try {
+	        window.localStorage.setItem(assistantPositionKey, JSON.stringify(assistantTogglePosition));
+	      } catch (error) {
+	        // Position persistence is optional; dragging should still work if storage is blocked.
+	      }
+	    };
+
+	    const applyAssistantTogglePosition = (left, top, shouldSave = false) => {
+	      const nextPosition = clampAssistantTogglePosition(left, top);
+	      assistantTogglePosition = nextPosition;
+	      aiAssistant.style.setProperty("--assistant-toggle-left", `${nextPosition.left}px`);
+	      aiAssistant.style.setProperty("--assistant-toggle-top", `${nextPosition.top}px`);
+	      aiAssistant.classList.add("is-custom-position");
+
+	      if (shouldSave) {
+	        saveAssistantTogglePosition();
+	      }
+	    };
+
+	    const restoreAssistantTogglePosition = () => {
+	      try {
+	        const savedPosition = JSON.parse(window.localStorage.getItem(assistantPositionKey) || "null");
+	        if (
+	          savedPosition &&
+	          Number.isFinite(savedPosition.left) &&
+	          Number.isFinite(savedPosition.top)
+	        ) {
+	          window.requestAnimationFrame(() => {
+	            applyAssistantTogglePosition(savedPosition.left, savedPosition.top, true);
+	          });
+	        }
+	      } catch (error) {
+	        try {
+	          window.localStorage.removeItem(assistantPositionKey);
+	        } catch (storageError) {
+	          // Ignore storage cleanup failures.
+	        }
+	      }
+	    };
+
+	    const startAssistantDrag = () => {
+	      if (!assistantDragState) {
+	        return;
+	      }
+
+	      const rect = aiAssistantToggle.getBoundingClientRect();
+	      assistantDragState.isDragging = true;
+	      assistantDragState.startLeft = rect.left;
+	      assistantDragState.startTop = rect.top;
+	      assistantSuppressToggleClickUntil = performance.now() + 700;
+	      applyAssistantTogglePosition(rect.left, rect.top);
+	      aiAssistant.classList.add("is-dragging");
+	    };
+
+	    const finishAssistantDrag = (event) => {
+	      if (!assistantDragState || event.pointerId !== assistantDragState.pointerId) {
+	        return;
+	      }
+
+	      const wasDragging = assistantDragState.isDragging;
+	      clearAssistantDragTimer();
+
+	      if (wasDragging) {
+	        event.preventDefault();
+	        assistantSuppressToggleClickUntil = performance.now() + 700;
+	        saveAssistantTogglePosition();
+	      }
+
+	      aiAssistant.classList.remove("is-dragging");
+
+	      try {
+	        if (aiAssistantToggle.hasPointerCapture(event.pointerId)) {
+	          aiAssistantToggle.releasePointerCapture(event.pointerId);
+	        }
+	      } catch (error) {
+	        // Some browsers may release capture automatically on pointer cancel.
+	      }
+
+	      assistantDragState = null;
+	    };
+
+	    restoreAssistantTogglePosition();
+
+	    aiAssistantToggle.addEventListener("pointerdown", (event) => {
+	      if (event.isPrimary === false || (event.pointerType === "mouse" && event.button !== 0)) {
+	        return;
+	      }
+
+	      assistantDragState = {
+	        pointerId: event.pointerId,
+	        pressX: event.clientX,
+	        pressY: event.clientY,
+	        startLeft: 0,
+	        startTop: 0,
+	        isDragging: false
+	      };
+
+	      try {
+	        aiAssistantToggle.setPointerCapture(event.pointerId);
+	      } catch (error) {
+	        // Pointer capture improves drag reliability but is not required.
+	      }
+
+	      clearAssistantDragTimer();
+	      assistantDragTimer = window.setTimeout(startAssistantDrag, assistantDragDelay);
+	    });
+
+	    window.addEventListener("pointermove", (event) => {
+	      if (!assistantDragState || event.pointerId !== assistantDragState.pointerId) {
+	        return;
+	      }
+
+	      if (!assistantDragState.isDragging) {
+	        return;
+	      }
+
+	      event.preventDefault();
+	      const nextLeft = assistantDragState.startLeft + event.clientX - assistantDragState.pressX;
+	      const nextTop = assistantDragState.startTop + event.clientY - assistantDragState.pressY;
+	      applyAssistantTogglePosition(nextLeft, nextTop);
+	    }, { passive: false });
+
+	    window.addEventListener("pointerup", finishAssistantDrag);
+	    window.addEventListener("pointercancel", finishAssistantDrag);
+	    window.addEventListener("resize", () => {
+	      if (assistantTogglePosition) {
+	        applyAssistantTogglePosition(assistantTogglePosition.left, assistantTogglePosition.top, true);
+	      }
+	    });
+
+	    aiAssistantToggle.addEventListener("contextmenu", (event) => {
+	      if (assistantDragState || performance.now() < assistantSuppressToggleClickUntil) {
+	        event.preventDefault();
+	      }
+	    });
+	
+	    const normalizeAssistantText = (text) => (text || "")
+	      .replace(/\r/g, "")
       .replace(/\n{3,}/g, "\n\n")
       .trim();
 
@@ -1050,10 +1224,16 @@
       });
     };
 
-    aiAssistantToggle.addEventListener("click", () => {
-      const willOpen = !aiAssistant.classList.contains("is-open");
-      setAssistantOpenState(willOpen);
-    });
+	    aiAssistantToggle.addEventListener("click", (event) => {
+	      if (performance.now() < assistantSuppressToggleClickUntil) {
+	        event.preventDefault();
+	        event.stopPropagation();
+	        return;
+	      }
+
+	      const willOpen = !aiAssistant.classList.contains("is-open");
+	      setAssistantOpenState(willOpen);
+	    });
 
     aiAssistantClose.addEventListener("click", () => {
       setAssistantOpenState(false);
