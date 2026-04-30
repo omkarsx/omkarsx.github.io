@@ -421,9 +421,12 @@
 	    const assistantPositionKey = "omkarx-assistant-toggle-position";
 	    const assistantDragDelay = 420;
 	    const assistantDragMargin = 8;
+	    const assistantSnapMargin = 18;
+	    const assistantSnapDuration = 380;
 	    let assistantDragTimer = 0;
 	    let assistantDragState = null;
 	    let assistantTogglePosition = null;
+	    let assistantToggleCorner = "";
 	    let assistantSuppressToggleClickUntil = 0;
 	
 	    const wait = (duration) => new Promise((resolve) => {
@@ -456,21 +459,60 @@
 	      };
 	    };
 
+	    const getAssistantCornerPositions = () => {
+	      const { width, height } = getAssistantToggleSize();
+	      const left = assistantSnapMargin;
+	      const top = assistantSnapMargin;
+	      const right = Math.max(assistantSnapMargin, window.innerWidth - width - assistantSnapMargin);
+	      const bottom = Math.max(assistantSnapMargin, window.innerHeight - height - assistantSnapMargin);
+
+	      return [
+	        { name: "top-left", left, top },
+	        { name: "top-right", left: right, top },
+	        { name: "bottom-left", left, top: bottom },
+	        { name: "bottom-right", left: right, top: bottom }
+	      ];
+	    };
+
+	    const getAssistantCornerByName = (cornerName) => (
+	      getAssistantCornerPositions().find((corner) => corner.name === cornerName) || null
+	    );
+
+	    const getNearestAssistantCorner = (left, top) => {
+	      const { width, height } = getAssistantToggleSize();
+	      const centerX = left + width / 2;
+	      const centerY = top + height / 2;
+
+	      return getAssistantCornerPositions().reduce((nearest, corner) => {
+	        const cornerCenterX = corner.left + width / 2;
+	        const cornerCenterY = corner.top + height / 2;
+	        const distance = Math.hypot(centerX - cornerCenterX, centerY - cornerCenterY);
+
+	        return !nearest || distance < nearest.distance
+	          ? { ...corner, distance }
+	          : nearest;
+	      }, null);
+	    };
+
 	    const saveAssistantTogglePosition = () => {
 	      if (!assistantTogglePosition) {
 	        return;
 	      }
 
 	      try {
-	        window.localStorage.setItem(assistantPositionKey, JSON.stringify(assistantTogglePosition));
+	        window.localStorage.setItem(assistantPositionKey, JSON.stringify({
+	          ...assistantTogglePosition,
+	          corner: assistantToggleCorner
+	        }));
 	      } catch (error) {
 	        // Position persistence is optional; dragging should still work if storage is blocked.
 	      }
 	    };
 
-	    const applyAssistantTogglePosition = (left, top, shouldSave = false) => {
+	    const applyAssistantTogglePosition = (left, top, shouldSave = false, cornerName = "") => {
 	      const nextPosition = clampAssistantTogglePosition(left, top);
 	      assistantTogglePosition = nextPosition;
+	      assistantToggleCorner = cornerName;
 	      aiAssistant.style.setProperty("--assistant-toggle-left", `${nextPosition.left}px`);
 	      aiAssistant.style.setProperty("--assistant-toggle-top", `${nextPosition.top}px`);
 	      aiAssistant.classList.add("is-custom-position");
@@ -480,16 +522,59 @@
 	      }
 	    };
 
+	    const applyAssistantCornerPosition = (cornerName, shouldSave = false) => {
+	      const corner = getAssistantCornerByName(cornerName);
+
+	      if (!corner) {
+	        return false;
+	      }
+
+	      applyAssistantTogglePosition(corner.left, corner.top, shouldSave, corner.name);
+	      return true;
+	    };
+
+	    const snapAssistantToggleToNearestCorner = (shouldSave = true) => {
+	      const rect = aiAssistantToggle.getBoundingClientRect();
+	      const nearestCorner = getNearestAssistantCorner(rect.left, rect.top);
+
+	      if (!nearestCorner) {
+	        return;
+	      }
+
+	      aiAssistant.classList.add("is-snapping");
+
+	      window.requestAnimationFrame(() => {
+	        applyAssistantTogglePosition(
+	          nearestCorner.left,
+	          nearestCorner.top,
+	          shouldSave,
+	          nearestCorner.name
+	        );
+	      });
+
+	      window.setTimeout(() => {
+	        aiAssistant.classList.remove("is-snapping");
+	      }, assistantSnapDuration);
+	    };
+
 	    const restoreAssistantTogglePosition = () => {
 	      try {
 	        const savedPosition = JSON.parse(window.localStorage.getItem(assistantPositionKey) || "null");
+	        if (savedPosition?.corner && getAssistantCornerByName(savedPosition.corner)) {
+	          window.requestAnimationFrame(() => {
+	            applyAssistantCornerPosition(savedPosition.corner, true);
+	          });
+	          return;
+	        }
+
 	        if (
 	          savedPosition &&
 	          Number.isFinite(savedPosition.left) &&
 	          Number.isFinite(savedPosition.top)
 	        ) {
 	          window.requestAnimationFrame(() => {
-	            applyAssistantTogglePosition(savedPosition.left, savedPosition.top, true);
+	            applyAssistantTogglePosition(savedPosition.left, savedPosition.top);
+	            snapAssistantToggleToNearestCorner(true);
 	          });
 	        }
 	      } catch (error) {
@@ -512,6 +597,7 @@
 	      assistantDragState.startTop = rect.top;
 	      assistantSuppressToggleClickUntil = performance.now() + 700;
 	      applyAssistantTogglePosition(rect.left, rect.top);
+	      aiAssistant.classList.remove("is-snapping");
 	      aiAssistant.classList.add("is-dragging");
 	    };
 
@@ -526,10 +612,13 @@
 	      if (wasDragging) {
 	        event.preventDefault();
 	        assistantSuppressToggleClickUntil = performance.now() + 700;
-	        saveAssistantTogglePosition();
 	      }
 
 	      aiAssistant.classList.remove("is-dragging");
+
+	      if (wasDragging) {
+	        snapAssistantToggleToNearestCorner(true);
+	      }
 
 	      try {
 	        if (aiAssistantToggle.hasPointerCapture(event.pointerId)) {
@@ -586,6 +675,10 @@
 	    window.addEventListener("pointerup", finishAssistantDrag);
 	    window.addEventListener("pointercancel", finishAssistantDrag);
 	    window.addEventListener("resize", () => {
+	      if (assistantToggleCorner && applyAssistantCornerPosition(assistantToggleCorner, true)) {
+	        return;
+	      }
+
 	      if (assistantTogglePosition) {
 	        applyAssistantTogglePosition(assistantTogglePosition.left, assistantTogglePosition.top, true);
 	      }
