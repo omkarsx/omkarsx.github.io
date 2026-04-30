@@ -49,6 +49,7 @@
   const aiQuickButtons = Array.from(document.querySelectorAll(".ai-quick-btn"));
   const heroTypingWord = document.getElementById("heroTypingWord");
   const cursorGlow = document.getElementById("cursorGlow");
+  const pageGlows = Array.from(document.querySelectorAll(".page-glow"));
 
   const contactForm = document.getElementById("contactForm");
   const statusEl = document.getElementById("formStatus");
@@ -112,8 +113,8 @@
     }
   }
 
-  if (cursorGlow) {
-    const cursorMedia = window.matchMedia("(hover: hover) and (pointer: fine)");
+	  if (cursorGlow) {
+	    const cursorMedia = window.matchMedia("(hover: hover) and (pointer: fine)");
 
     if (cursorMedia.matches) {
       const cursorState = {
@@ -161,10 +162,59 @@
         cursorState.visible = false;
         cursorGlow.classList.remove("is-visible", "is-hovering");
       });
-    }
-  }
+	    }
+	  }
 
-  const updateThemeButton = (theme) => {
+	  if (circuitCanvas || pageGlows.length) {
+	    const parallaxMedia = window.matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)");
+	    let parallaxFrame = 0;
+
+	    const resetParallax = () => {
+	      root.style.setProperty("--parallax-bg-y", "0px");
+	      root.style.setProperty("--parallax-circuit-y", "0px");
+	      root.style.setProperty("--parallax-glow-y", "0px");
+	    };
+
+	    const renderParallax = () => {
+	      parallaxFrame = 0;
+
+	      if (!parallaxMedia.matches) {
+	        resetParallax();
+	        return;
+	      }
+
+	      const scrollY = window.scrollY || 0;
+	      const maxOffset = Math.min(96, window.innerHeight * 0.12);
+	      const clampOffset = (value) => Math.max(-maxOffset, Math.min(maxOffset, value));
+
+	      root.style.setProperty("--parallax-bg-y", `${Math.round(clampOffset(scrollY * -0.08))}px`);
+	      root.style.setProperty("--parallax-circuit-y", `${Math.round(clampOffset(scrollY * -0.2))}px`);
+	      root.style.setProperty("--parallax-glow-y", `${Math.round(clampOffset(scrollY * -0.12))}px`);
+	    };
+
+	    const requestParallax = () => {
+	      if (!parallaxMedia.matches) {
+	        resetParallax();
+	        return;
+	      }
+
+	      if (!parallaxFrame) {
+	        parallaxFrame = window.requestAnimationFrame(renderParallax);
+	      }
+	    };
+
+	    requestParallax();
+	    window.addEventListener("scroll", requestParallax, { passive: true });
+	    window.addEventListener("resize", requestParallax);
+
+	    if (typeof parallaxMedia.addEventListener === "function") {
+	      parallaxMedia.addEventListener("change", requestParallax);
+	    } else if (typeof parallaxMedia.addListener === "function") {
+	      parallaxMedia.addListener(requestParallax);
+	    }
+	  }
+	
+	  const updateThemeButton = (theme) => {
     if (!themeToggle) {
       return;
     }
@@ -1581,12 +1631,13 @@
         height: 0,
         dpr: 1,
         nodes: [],
-        connections: [],
-        pulses: [],
-        palette: null,
-        frameId: 0,
-        lastTime: 0
-      };
+	        connections: [],
+	        pulses: [],
+	        palette: null,
+	        visualBuffer: 0,
+	        frameId: 0,
+	        lastTime: 0
+	      };
 
       const readCircuitPalette = () => {
         const styles = window.getComputedStyle(root);
@@ -1707,17 +1758,21 @@
         pulse.alpha = nextPulse.alpha;
       };
 
-      const regenerateCircuit = () => {
-        const lowPowerCircuit = isLowPowerCircuitMode();
-        circuitState.width = window.innerWidth;
-        circuitState.height = window.innerHeight;
-        circuitState.dpr = lowPowerCircuit ? 1 : Math.min(window.devicePixelRatio || 1, 1.75);
-        circuitCanvas.width = Math.max(Math.round(circuitState.width * circuitState.dpr), 1);
-        circuitCanvas.height = Math.max(Math.round(circuitState.height * circuitState.dpr), 1);
-        circuitCanvas.style.width = `${circuitState.width}px`;
-        circuitCanvas.style.height = `${circuitState.height}px`;
-        circuitContext.setTransform(circuitState.dpr, 0, 0, circuitState.dpr, 0, 0);
-        circuitState.palette = readCircuitPalette();
+	      const regenerateCircuit = () => {
+	        const lowPowerCircuit = isLowPowerCircuitMode();
+	        const visualBuffer = lowPowerCircuit ? 0 : Math.min(112, Math.round(window.innerHeight * 0.14));
+	        circuitState.width = window.innerWidth;
+	        circuitState.height = window.innerHeight + visualBuffer * 2;
+	        circuitState.visualBuffer = visualBuffer;
+	        circuitState.dpr = lowPowerCircuit ? 1 : Math.min(window.devicePixelRatio || 1, 1.75);
+	        circuitCanvas.width = Math.max(Math.round(circuitState.width * circuitState.dpr), 1);
+	        circuitCanvas.height = Math.max(Math.round(circuitState.height * circuitState.dpr), 1);
+	        circuitCanvas.style.width = `${circuitState.width}px`;
+	        circuitCanvas.style.height = `${circuitState.height}px`;
+	        circuitCanvas.style.top = `${-visualBuffer}px`;
+	        circuitCanvas.style.bottom = "auto";
+	        circuitContext.setTransform(circuitState.dpr, 0, 0, circuitState.dpr, 0, 0);
+	        circuitState.palette = readCircuitPalette();
 
         const padding = lowPowerCircuit
           ? (circuitState.width < 640 ? 28 : 40)
@@ -1939,15 +1994,15 @@
         drawCircuitBackground(0, performance.now());
       };
 
-      const handleCircuitPointer = (event) => {
-        if (isLowPowerCircuitMode() || event.pointerType === "touch") {
-          return;
-        }
-
-        pointerState.x = event.clientX;
-        pointerState.y = event.clientY;
-        pointerState.active = true;
-        pointerState.movedAt = performance.now();
+	      const handleCircuitPointer = (event) => {
+	        if (isLowPowerCircuitMode() || event.pointerType === "touch") {
+	          return;
+	        }
+	
+	        pointerState.x = event.clientX;
+	        pointerState.y = event.clientY + circuitState.visualBuffer;
+	        pointerState.active = true;
+	        pointerState.movedAt = performance.now();
         startCircuitLoop();
       };
 

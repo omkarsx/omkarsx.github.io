@@ -26,9 +26,9 @@
   --bg-gradient-2: #081124;
   --bg-gradient-3: #070b14;
   --bg-glow-1: rgba(51, 211, 189, 0.17);
-  --bg-glow-2: rgba(255, 155, 84, 0.16);
+  --bg-glow-2: rgba(78, 192, 255, 0.14);
   --page-glow-1: rgba(76, 192, 255, 0.28);
-  --page-glow-2: rgba(255, 155, 84, 0.24);
+  --page-glow-2: rgba(51, 211, 189, 0.2);
   --circuit-line: rgba(92, 202, 255, 0.16);
   --circuit-line-strong: rgba(122, 228, 255, 0.38);
   --circuit-node: rgba(176, 241, 255, 0.9);
@@ -40,6 +40,9 @@
   --font-body: "Manrope", sans-serif;
   --font-heading: "Space Grotesk", sans-serif;
   --header-height: 84px;
+  --parallax-bg-y: 0px;
+  --parallax-circuit-y: 0px;
+  --parallax-glow-y: 0px;
 }
 
 :root[data-theme="light"] {
@@ -65,9 +68,9 @@
   --bg-gradient-2: #eef4ff;
   --bg-gradient-3: #e8f0ff;
   --bg-glow-1: rgba(51, 211, 189, 0.12);
-  --bg-glow-2: rgba(255, 155, 84, 0.12);
+  --bg-glow-2: rgba(78, 192, 255, 0.1);
   --page-glow-1: rgba(78, 192, 255, 0.2);
-  --page-glow-2: rgba(255, 155, 84, 0.19);
+  --page-glow-2: rgba(51, 211, 189, 0.14);
   --circuit-line: rgba(66, 126, 206, 0.1);
   --circuit-line-strong: rgba(54, 110, 190, 0.22);
   --circuit-node: rgba(61, 111, 186, 0.64);
@@ -119,6 +122,12 @@ body {
     radial-gradient(circle at 12% -6%, var(--bg-glow-1), transparent 28%),
     radial-gradient(circle at 88% 8%, var(--bg-glow-2), transparent 26%),
     linear-gradient(180deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 40%, var(--bg-gradient-3) 100%);
+  background-repeat: no-repeat;
+  background-size: 120% 120%, 120% 120%, 100% 100%;
+  background-position:
+    center var(--parallax-bg-y),
+    center var(--parallax-bg-y),
+    center top;
   color: var(--text);
   line-height: 1.65;
   overflow-x: hidden;
@@ -132,7 +141,10 @@ body {
   z-index: -2;
   pointer-events: none;
   opacity: 0.78;
+  transform: translate3d(0, var(--parallax-circuit-y), 0);
   transition: opacity 0.25s ease;
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 :root[data-theme="light"] .circuit-canvas {
@@ -171,6 +183,9 @@ ul {
   z-index: -1;
   opacity: 0.45;
   pointer-events: none;
+  transform: translate3d(0, var(--parallax-glow-y), 0);
+  backface-visibility: hidden;
+  will-change: transform;
 }
 
 .glow-one {
@@ -4333,6 +4348,18 @@ textarea:focus-visible {
 }
 
 @media (hover: none), (pointer: coarse) {
+  :root {
+    --parallax-bg-y: 0px;
+    --parallax-circuit-y: 0px;
+    --parallax-glow-y: 0px;
+  }
+
+  .circuit-canvas,
+  .page-glow {
+    transform: none;
+    will-change: auto;
+  }
+
   .cursor-glow {
     display: none;
   }
