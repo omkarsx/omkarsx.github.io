@@ -346,8 +346,7 @@
     const assistantApiBase = "https://generativelanguage.googleapis.com/v1beta/models/";
     const assistantPollinationsApi = "https://text.pollinations.ai/openai";
     const assistantSystemPromptBase = "You are OmkarX AI Assistant, a helpful general AI assistant on Omkar Shinde's portfolio website. Answer any normal question clearly and concisely. When the user asks about Omkar Shinde, OmkarX, the portfolio website, projects, skills, education, journey, goals, or contact details, prioritize the grounded portfolio context provided below and do not invent personal details. For general questions outside the portfolio, answer normally as a smart assistant.";
-    const assistantWelcomeMessage = "Hello, I am OmkarX AI Assistant. Ask me about OmkarX, projects, skills, technology, learning, or any general question.";
-    const assistantAvatarMarkup = '<img class="ai-message-avatar-logo" src="images/omkarx-assistant-mark.png" alt="" width="640" height="640" decoding="async" aria-hidden="true">';
+	    const assistantAvatarMarkup = '<img class="ai-message-avatar-logo" src="images/omkarx-assistant-mark.png" alt="" width="640" height="640" decoding="async" aria-hidden="true">';
     const assistantProjectLines = assistantProjectSummary.map((project) => {
       const tagText = project.tags.length ? ` Focus areas: ${project.tags.join(", ")}.` : "";
       return `- ${project.title} (${project.category}): ${project.description}${tagText}`;
@@ -395,26 +394,36 @@
       `LinkedIn: ${assistantLinkedin}`,
       `Instagram: ${assistantInstagram}`
     ];
-    const assistantSystemPrompt = [
-      assistantSystemPromptBase,
-      "",
-      "Use the grounded portfolio context only for OmkarX or Omkar Shinde related questions. If a portfolio detail is not shown in the context, say it is not currently shown on the portfolio instead of guessing.",
-      "For non-portfolio questions, answer normally and keep the response useful, safe, and concise.",
-      "",
-      assistantContextLines.join("\n")
-    ].join("\n");
-    const assistantHelpPattern = /^(hi|hello|hey|help|what can you do|who are you|introduce yourself)\b/i;
-    const assistantPortfolioIntentPattern = /\b(omkar|shinde|omkarx|portfolio|your|you|my skills|my projects|what am i learning|about omkar|contact info|contact|email|linkedin|github|instagram|jspm|entc|palo alto|internship|journey|timeline|student builder)\b/i;
-    const assistantLinks = {
+	    const assistantSystemPrompt = [
+	      assistantSystemPromptBase,
+	      "",
+	      "Use the grounded portfolio context only for OmkarX or Omkar Shinde related questions. If a portfolio detail is not shown in the context, say it is not currently shown on the portfolio instead of guessing.",
+	      "For non-portfolio questions, answer normally and keep the response useful, safe, and concise.",
+	      "",
+	      assistantContextLines.join("\n")
+	    ].join("\n");
+	    const assistantHelpPattern = /^(hi|hello|hey|help|what can you do|who are you|introduce yourself)\b/i;
+	    const assistantPortfolioIntentPattern = /\b(omkar|shinde|omkarx|portfolio|your|you|my skills|my projects|what am i learning|about omkar|contact info|contact|email|linkedin|github|instagram|jspm|entc|palo alto|internship|journey|timeline|student builder)\b/i;
+	    const assistantSectionGreetings = {
+	      home: "Hi 👋 Welcome to OmkarX. What do you want to explore?",
+	      about: "Want to know more about my journey and background?",
+	      journey: "Curious about my engineering journey?",
+	      learning: "Here's what I'm currently learning and exploring.",
+	      projects: "Want a quick tour of my projects?",
+	      contact: "Need to connect with me? I'm here to help.",
+	      default: "Hi 👋 How can I help you explore OmkarX?"
+	    };
+	    const assistantLinks = {
       projects: assistantPage === "timeline" ? "index.html#projects" : "#projects",
       skills: assistantPage === "timeline" ? "index.html#skills" : "#skills",
       contact: assistantPage === "timeline" ? "index.html#contact" : "#contact",
       timeline: assistantPage === "timeline" ? "#journeyTimeline" : "timeline.html",
       home: assistantPage === "timeline" ? "index.html#home" : "#home"
     };
-    let assistantInitialized = false;
-    let assistantBusy = false;
-    let assistantReplyQueue = Promise.resolve();
+	    let assistantInitialized = false;
+	    let assistantBusy = false;
+	    let assistantReplyQueue = Promise.resolve();
+	    let assistantGreetingMessage = null;
 	    let assistantConversationHistory = [];
 	    let assistantResolvedModel = "";
 	    let puterScriptPromise = null;
@@ -695,27 +704,87 @@
       .replace(/\n{3,}/g, "\n\n")
       .trim();
 
-    const scrollAssistantToLatest = () => {
-      aiAssistantFeed.scrollTo({
-        top: aiAssistantFeed.scrollHeight,
-        behavior: "smooth"
-      });
-    };
+	    const scrollAssistantToLatest = () => {
+	      aiAssistantFeed.scrollTo({
+	        top: aiAssistantFeed.scrollHeight,
+	        behavior: "smooth"
+	      });
+	    };
 
-    const setAssistantOpenState = (isOpen) => {
-      aiAssistant.classList.toggle("is-open", isOpen);
-      aiAssistantPanel.setAttribute("aria-hidden", String(!isOpen));
-      aiAssistantToggle.setAttribute("aria-expanded", String(isOpen));
+	    const getAssistantActiveSection = () => {
+	      if (assistantPage === "timeline" || document.body.classList.contains("timeline-page")) {
+	        return "journey";
+	      }
 
-      if (isOpen) {
-        if (!assistantInitialized) {
-          const welcomeMessage = createAssistantMessage({
-            text: assistantWelcomeMessage,
-            meta: "OmkarX AI Assistant"
-          });
-          aiAssistantFeed.appendChild(welcomeMessage);
-          assistantInitialized = true;
-        }
+	      const sectionGroups = [
+	        { key: "home", selectors: ["#home"] },
+	        { key: "about", selectors: ["#about"] },
+	        { key: "learning", selectors: ["#skills", "#tech-stack", "#skill-tree"] },
+	        { key: "projects", selectors: ["#projects"] },
+	        { key: "contact", selectors: ["#contact"] }
+	      ];
+	      const viewportTop = header ? header.offsetHeight : 0;
+	      const viewportBottom = window.innerHeight;
+	      let activeSection = "";
+	      let bestScore = 0;
+
+	      sectionGroups.forEach(({ key, selectors }) => {
+	        selectors.forEach((selector) => {
+	          const section = document.querySelector(selector);
+
+	          if (!section) {
+	            return;
+	          }
+
+	          const rect = section.getBoundingClientRect();
+	          const visibleHeight = Math.min(rect.bottom, viewportBottom) - Math.max(rect.top, viewportTop);
+
+	          if (visibleHeight <= 0) {
+	            return;
+	          }
+
+	          const sectionCenter = rect.top + rect.height / 2;
+	          const viewportFocus = viewportTop + (viewportBottom - viewportTop) * 0.42;
+	          const distanceFromFocus = Math.abs(sectionCenter - viewportFocus);
+	          const score = visibleHeight - distanceFromFocus * 0.18;
+
+	          if (score > bestScore) {
+	            bestScore = score;
+	            activeSection = key;
+	          }
+	        });
+	      });
+
+	      return activeSection || "default";
+	    };
+
+	    const getAssistantGreeting = () => (
+	      assistantSectionGreetings[getAssistantActiveSection()] || assistantSectionGreetings.default
+	    );
+
+	    const setAssistantOpenState = (isOpen) => {
+	      aiAssistant.classList.toggle("is-open", isOpen);
+	      aiAssistantPanel.setAttribute("aria-hidden", String(!isOpen));
+	      aiAssistantToggle.setAttribute("aria-expanded", String(isOpen));
+
+	      if (isOpen) {
+	        const currentGreeting = getAssistantGreeting();
+
+	        if (!assistantInitialized) {
+	          const welcomeMessage = createAssistantMessage({
+	            text: currentGreeting,
+	            meta: "OmkarX AI Assistant"
+	          });
+	          aiAssistantFeed.appendChild(welcomeMessage);
+	          assistantGreetingMessage = welcomeMessage;
+	          assistantInitialized = true;
+	        } else if (assistantGreetingMessage && !aiAssistantFeed.querySelector(".ai-message-user")) {
+	          const greetingText = assistantGreetingMessage.querySelector(".ai-message-bubble p");
+
+	          if (greetingText) {
+	            greetingText.textContent = currentGreeting;
+	          }
+	        }
 
         window.setTimeout(() => {
           aiAssistantInput.focus();
