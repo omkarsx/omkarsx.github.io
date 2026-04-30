@@ -413,6 +413,7 @@
 	      contact: "Need to connect with me? I'm here to help.",
 	      default: "Hi 👋 How can I help you explore OmkarX?"
 	    };
+	    const assistantContextSections = new Set(["journey", "projects", "learning", "about", "contact"]);
 	    const assistantLinks = {
       projects: assistantPage === "timeline" ? "index.html#projects" : "#projects",
       skills: assistantPage === "timeline" ? "index.html#skills" : "#skills",
@@ -427,6 +428,7 @@
 	    let assistantConversationHistory = [];
 	    let assistantResolvedModel = "";
 	    let puterScriptPromise = null;
+	    let lastContext = null;
 	    const assistantPositionKey = "omkarx-assistant-toggle-position";
 	    const assistantDragDelay = 420;
 	    const assistantDragMargin = 8;
@@ -758,9 +760,14 @@
 	      return activeSection || "default";
 	    };
 
-	    const getAssistantGreeting = () => (
-	      assistantSectionGreetings[getAssistantActiveSection()] || assistantSectionGreetings.default
-	    );
+	    const getAssistantGreeting = () => {
+	      const activeSection = getAssistantActiveSection();
+
+	      return {
+	        text: assistantSectionGreetings[activeSection] || assistantSectionGreetings.default,
+	        context: assistantContextSections.has(activeSection) ? activeSection : null
+	      };
+	    };
 
 	    const setAssistantOpenState = (isOpen) => {
 	      aiAssistant.classList.toggle("is-open", isOpen);
@@ -772,18 +779,21 @@
 
 	        if (!assistantInitialized) {
 	          const welcomeMessage = createAssistantMessage({
-	            text: currentGreeting,
+	            text: currentGreeting.text,
 	            meta: "OmkarX AI Assistant"
 	          });
 	          aiAssistantFeed.appendChild(welcomeMessage);
 	          assistantGreetingMessage = welcomeMessage;
+	          lastContext = currentGreeting.context;
 	          assistantInitialized = true;
 	        } else if (assistantGreetingMessage && !aiAssistantFeed.querySelector(".ai-message-user")) {
 	          const greetingText = assistantGreetingMessage.querySelector(".ai-message-bubble p");
 
 	          if (greetingText) {
-	            greetingText.textContent = currentGreeting;
+	            greetingText.textContent = currentGreeting.text;
 	          }
+
+	          lastContext = currentGreeting.context;
 	        }
 
         window.setTimeout(() => {
@@ -943,10 +953,10 @@
       }
     };
 
-    const buildAssistantActions = (question, responseText) => {
-      const normalized = `${question} ${responseText}`.toLowerCase();
-      const actions = [];
-      const seen = new Set();
+	    const buildAssistantActions = (question, responseText) => {
+	      const normalized = `${question} ${responseText}`.toLowerCase();
+	      const actions = [];
+	      const seen = new Set();
 
       const addAction = (label, href) => {
         if (!href || seen.has(label)) {
@@ -977,14 +987,124 @@
         addAction("GitHub", assistantGithub);
         addAction("LinkedIn", assistantLinkedin);
       }
+	
+	      return actions;
+	    };
 
-      return actions;
-    };
+	    const getAssistantKeywordResponse = (question, text) => {
+	      const projectTitles = assistantProjectSummary.map((project) => project.title).join(", ");
 
-    const getFallbackAssistantResponse = (question) => {
-      const normalized = question.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
-      const projectTitles = assistantProjectSummary.map((project) => project.title).join(", ");
-      const isPortfolioIntent = assistantPortfolioIntentPattern.test(normalized);
+	      if (text.includes("project")) {
+	        const responseText = `Current highlighted projects are ${projectTitles}. The projects section shows each project idea, focus area, and build direction.`;
+
+	        return {
+	          text: responseText,
+	          meta: "OmkarX AI Assistant",
+	          actions: buildAssistantActions(question, "projects")
+	        };
+	      }
+
+	      if (text.includes("skill")) {
+	        const responseText = "Skills currently shown on OmkarX are HTML, CSS, JavaScript, Git, VS Code, Arduino, network security fundamentals, and basic cybersecurity concepts.";
+
+	        return {
+	          text: responseText,
+	          meta: "OmkarX AI Assistant",
+	          actions: buildAssistantActions(question, "skills html css javascript git arduino cybersecurity")
+	        };
+	      }
+
+	      if (text.includes("learn")) {
+	        const responseText = "I'm currently learning web development, cybersecurity concepts, Arduino for embedded systems, AI tools, and automation through practical projects.";
+
+	        return {
+	          text: responseText,
+	          meta: "OmkarX AI Assistant",
+	          actions: buildAssistantActions(question, "learning web development cybersecurity arduino embedded systems")
+	        };
+	      }
+
+	      if (text.includes("about")) {
+	        const responseText = "I'm Omkar Shinde, a B.Tech ENTC student focused on building real-world technology and improving my engineering skills.";
+
+	        return {
+	          text: responseText,
+	          meta: "OmkarX AI Assistant",
+	          actions: buildAssistantActions(question, "about omkar journey education")
+	        };
+	      }
+
+	      if (text.includes("contact")) {
+	        const responseText = `You can connect with me through the contact section on my portfolio or by email at ${assistantEmail}.`;
+
+	        return {
+	          text: responseText,
+	          meta: "OmkarX AI Assistant",
+	          actions: buildAssistantActions(question, "contact email github linkedin")
+	        };
+	      }
+
+	      if (text.includes("journey")) {
+	        const responseText = "My journey started with curiosity in technology and led me to pursue Electronics and Telecommunication Engineering at JSPM University. I'm building projects and exploring cybersecurity and real-world systems.";
+
+	        return {
+	          text: responseText,
+	          meta: "OmkarX AI Assistant",
+	          actions: buildAssistantActions(question, "journey education jspm cybersecurity")
+	        };
+	      }
+
+	      return null;
+	    };
+
+	    const getAssistantContextResponse = (question, text) => {
+	      const yesPattern = /^(yes|yeah|yep|ok|sure)$/i;
+	      const contextResponses = {
+	        journey: "My journey started with curiosity in technology and led me to pursue Electronics and Telecommunication Engineering at JSPM University. I'm building projects and exploring cybersecurity and real-world systems.",
+	        projects: "I've built my OmkarX portfolio and I'm working on more practical projects combining web development and electronics.",
+	        learning: "I'm currently learning web development, cybersecurity concepts, and Arduino for embedded systems.",
+	        about: "I'm Omkar Shinde, a B.Tech ENTC student focused on building real-world technology and improving my engineering skills.",
+	        contact: "You can connect with me through the contact section on my portfolio."
+	      };
+
+	      if (yesPattern.test(text)) {
+	        if (lastContext && contextResponses[lastContext]) {
+	          const context = lastContext;
+	          const responseText = contextResponses[context];
+	          lastContext = null;
+
+	          return {
+	            text: responseText,
+	            meta: "OmkarX AI Assistant",
+	            actions: buildAssistantActions(question, context)
+	          };
+	        }
+
+	        return {
+	          text: "I can help you explore my projects, skills, learning, or contact details. What would you like to know?",
+	          meta: "OmkarX AI Assistant",
+	          actions: [
+	            { label: "Show Projects", href: assistantLinks.projects },
+	            { label: "My Skills", href: assistantLinks.skills },
+	            { label: "Contact Info", href: assistantLinks.contact }
+	          ]
+	        };
+	      }
+
+	      lastContext = null;
+	      return getAssistantKeywordResponse(question, text);
+	    };
+	
+	    const getFallbackAssistantResponse = (question) => {
+	      const normalized = question.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+	      const keywordResponse = getAssistantKeywordResponse(question, normalized);
+	
+	      if (keywordResponse) {
+	        return keywordResponse;
+	      }
+	
+	      const projectTitles = assistantProjectSummary.map((project) => project.title).join(", ");
+	      const isPortfolioIntent = assistantPortfolioIntentPattern.test(normalized);
 
       if (isPortfolioIntent && /(project|projects|work|portfolio project|show|build)/.test(normalized) && !/(skill|contact|about|learn)/.test(normalized)) {
         return {
@@ -1037,12 +1157,12 @@
           ]
         };
       }
-
-      return {
-        text: "I cannot answer this general question right now because the live AI service is unavailable. I will not redirect you away from OmkarX. Please try again later, or ask about OmkarX, projects, skills, journey, or contact details.",
-        meta: "Live AI Unavailable",
-        actions: [
-          { label: "Show Projects", href: assistantLinks.projects },
+	
+	      return {
+	        text: "I can help you explore my projects, skills, learning, or contact details. What would you like to know?",
+	        meta: "OmkarX AI Assistant",
+	        actions: [
+	          { label: "Show Projects", href: assistantLinks.projects },
           { label: "My Skills", href: assistantLinks.skills },
           { label: "Contact Info", href: assistantLinks.contact }
         ]
@@ -1345,24 +1465,26 @@
       return getFallbackAssistantResponse(question);
     };
 
-    const submitAssistantQuestion = (question) => {
-      const cleanQuestion = question.trim();
-      if (!cleanQuestion || assistantBusy) {
-        return;
-      }
-
-      setAssistantOpenState(true);
-      addUserMessage(cleanQuestion);
-      pushAssistantHistory("user", cleanQuestion);
+	    const submitAssistantQuestion = (question) => {
+	      const cleanQuestion = question.trim();
+	      if (!cleanQuestion || assistantBusy) {
+	        return;
+	      }
+	      const text = cleanQuestion.toLowerCase().trim();
+	
+	      setAssistantOpenState(true);
+	      addUserMessage(cleanQuestion);
+	      pushAssistantHistory("user", cleanQuestion);
       aiAssistantInput.value = "";
 
       assistantReplyQueue = assistantReplyQueue.then(async () => {
-        setAssistantBusyState(true);
-        const typingIndicator = addTypingIndicator();
-        try {
-          const loadingStartedAt = performance.now();
-          const response = await requestGeminiReply(cleanQuestion);
-          const waitRemaining = Math.max(240 - (performance.now() - loadingStartedAt), 0);
+	        setAssistantBusyState(true);
+	        const typingIndicator = addTypingIndicator();
+	        try {
+	          const loadingStartedAt = performance.now();
+	          const localResponse = getAssistantContextResponse(cleanQuestion, text);
+	          const response = localResponse || await requestGeminiReply(cleanQuestion);
+	          const waitRemaining = Math.max(240 - (performance.now() - loadingStartedAt), 0);
 
           if (waitRemaining > 0) {
             await wait(waitRemaining);
