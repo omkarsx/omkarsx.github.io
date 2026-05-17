@@ -76,6 +76,12 @@
   const VIEW_MODE_KEY = "omkarx-view-mode";
   let refreshCircuitTheme = null;
 
+  const trackClarityEvent = (eventName) => {
+    if (typeof window.clarity === "function") {
+      window.clarity("event", eventName);
+    }
+  };
+
   if (yearEl) {
     yearEl.textContent = String(new Date().getFullYear());
   }
@@ -342,8 +348,12 @@
   modeButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const nextMode = button.dataset.mode === "engineer" ? "engineer" : "explore";
+      const wasEngineerMode = root.dataset.viewMode === "engineer";
       applyViewMode(nextMode);
       window.localStorage.setItem(VIEW_MODE_KEY, nextMode);
+      if (nextMode === "engineer" && !wasEngineerMode) {
+        trackClarityEvent("Engineer_Mode_Enabled");
+      }
       closeNav();
     });
   });
@@ -1114,11 +1124,16 @@
 	    };
 
 	    const setAssistantOpenState = (isOpen) => {
+	      const wasOpen = aiAssistant.classList.contains("is-open");
 	      aiAssistant.classList.toggle("is-open", isOpen);
 	      aiAssistantPanel.setAttribute("aria-hidden", String(!isOpen));
 	      aiAssistantToggle.setAttribute("aria-expanded", String(isOpen));
 
 	      if (isOpen) {
+	        if (!wasOpen) {
+	          trackClarityEvent("AI_Assistant_Opened");
+	        }
+
 	        const currentGreeting = getAssistantGreeting();
 
 	        if (!assistantInitialized) {
@@ -3114,6 +3129,24 @@
     });
   }
 
+  document.querySelectorAll(".project-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      trackClarityEvent("Project_Opened");
+    });
+  });
+
+  document.querySelectorAll('a[href="#contact"], a[href$="#contact"], a[href^="mailto:"], #copyEmailBtn').forEach((element) => {
+    element.addEventListener("click", () => {
+      trackClarityEvent("Contact_Clicked");
+    });
+  });
+
+  document.querySelectorAll('a[download], a[href*="resume" i], a[href$=".pdf" i]').forEach((link) => {
+    link.addEventListener("click", () => {
+      trackClarityEvent("Resume_Downloaded");
+    });
+  });
+
   const setCopyStatus = (message, type = "") => {
     if (!copyStatus) {
       return;
@@ -3191,6 +3224,7 @@
 
   contactForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    trackClarityEvent("Contact_Clicked");
 
     const name = nameInput ? nameInput.value.trim() : "";
     const email = emailInput ? emailInput.value.trim() : "";
