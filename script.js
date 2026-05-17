@@ -3,6 +3,7 @@
   const header = document.querySelector(".site-header");
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".site-nav");
+  const navWrap = document.querySelector(".nav-wrap");
   const themeToggle = document.getElementById("themeToggle");
   const scrollProgress = document.getElementById("scrollProgress");
   const filterButtons = document.querySelectorAll(".filter-btn");
@@ -289,26 +290,49 @@
   updateHeaderAndProgress();
   window.addEventListener("scroll", updateHeaderAndProgress, { passive: true });
 
+  const setNavOpen = (isOpen) => {
+    if (!nav || !navToggle) {
+      return;
+    }
+
+    nav.classList.toggle("open", isOpen);
+    navToggle.classList.toggle("is-open", isOpen);
+    navToggle.setAttribute("aria-expanded", String(isOpen));
+    navToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
+    navToggle.innerHTML = isOpen
+      ? '<i class="fa-solid fa-xmark" aria-hidden="true"></i>'
+      : '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+  };
+
   if (navToggle && nav) {
     navToggle.addEventListener("click", () => {
       const expanded = navToggle.getAttribute("aria-expanded") === "true";
-      navToggle.setAttribute("aria-expanded", String(!expanded));
-      nav.classList.toggle("open", !expanded);
-      navToggle.innerHTML = !expanded
-        ? '<i class="fa-solid fa-xmark" aria-hidden="true"></i>'
-        : '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+      setNavOpen(!expanded);
     });
   }
 
 	  const closeNav = () => {
-	    if (!nav || !navToggle) {
-	      return;
-	    }
-
-    nav.classList.remove("open");
-    navToggle.setAttribute("aria-expanded", "false");
-	    navToggle.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>';
+	    setNavOpen(false);
 	  };
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeNav();
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!nav || !nav.classList.contains("open") || !navWrap) {
+      return;
+    }
+
+    const clickPath = typeof event.composedPath === "function" ? event.composedPath() : [];
+    const clickedInsideNav = clickPath.includes(navWrap) || (event.target instanceof Node && navWrap.contains(event.target));
+
+    if (!clickedInsideNav) {
+      closeNav();
+    }
+  });
 
 	  if (nav) {
 	    const navLinks = Array.from(nav.querySelectorAll("a"));
