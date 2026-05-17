@@ -4,6 +4,13 @@
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector(".site-nav");
   const navWrap = document.querySelector(".nav-wrap");
+  const modeButtons = Array.from(document.querySelectorAll(".mode-switch-btn"));
+  const systemStatusPanel = document.getElementById("systemStatusPanel");
+  const engineeringLayer = document.getElementById("engineering-layer");
+  const learningFeedText = document.getElementById("learningFeedText");
+  const thoughtProcessToggle = document.getElementById("thoughtProcessToggle");
+  const thoughtProcessPanel = document.getElementById("thoughtProcessPanel");
+  const projectTechButtons = Array.from(document.querySelectorAll(".project-tech-toggle"));
   const themeToggle = document.getElementById("themeToggle");
   const scrollProgress = document.getElementById("scrollProgress");
   const filterButtons = document.querySelectorAll(".filter-btn");
@@ -66,6 +73,7 @@
   };
 
   const THEME_KEY = "omkarx-theme";
+  const VIEW_MODE_KEY = "omkarx-view-mode";
   let refreshCircuitTheme = null;
 
   if (yearEl) {
@@ -271,7 +279,114 @@
     });
   }
 
+  const closeProjectArchitectureViews = () => {
+    projectTechButtons.forEach((button) => {
+      const flow = button.nextElementSibling;
+      button.classList.remove("is-open");
+      button.setAttribute("aria-expanded", "false");
+
+      if (flow instanceof HTMLElement) {
+        flow.hidden = true;
+      }
+    });
+  };
+
+  const setThoughtProcessOpen = (isOpen) => {
+    if (!thoughtProcessToggle || !thoughtProcessPanel) {
+      return;
+    }
+
+    thoughtProcessToggle.setAttribute("aria-expanded", String(isOpen));
+    thoughtProcessPanel.hidden = !isOpen;
+  };
+
+  const applyViewMode = (mode) => {
+    const nextMode = mode === "engineer" ? "engineer" : "explore";
+    const isEngineerMode = nextMode === "engineer";
+
+    root.dataset.viewMode = nextMode;
+    document.body.classList.toggle("engineer-mode", isEngineerMode);
+
+    modeButtons.forEach((button) => {
+      const isActive = button.dataset.mode === nextMode;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+
+    if (systemStatusPanel) {
+      systemStatusPanel.setAttribute("aria-hidden", String(!isEngineerMode));
+    }
+
+    if (engineeringLayer) {
+      engineeringLayer.setAttribute("aria-hidden", String(!isEngineerMode));
+      if (isEngineerMode) {
+        engineeringLayer.querySelectorAll(".reveal").forEach((node) => {
+          node.classList.add("is-visible");
+        });
+      }
+    }
+
+    if (!isEngineerMode) {
+      closeProjectArchitectureViews();
+      setThoughtProcessOpen(false);
+    }
+  };
+
+  const getInitialViewMode = () => {
+    const saved = window.localStorage.getItem(VIEW_MODE_KEY);
+    return saved === "engineer" ? "engineer" : "explore";
+  };
+
+  applyViewMode(getInitialViewMode());
+
+  modeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const nextMode = button.dataset.mode === "engineer" ? "engineer" : "explore";
+      applyViewMode(nextMode);
+      window.localStorage.setItem(VIEW_MODE_KEY, nextMode);
+      closeNav();
+    });
+  });
+
+  if (learningFeedText) {
+    const learningFeedItems = ["JavaScript DOM", "Arduino", "Network Security", "UI Animation"];
+    let learningFeedIndex = 0;
+
+    window.setInterval(() => {
+      learningFeedIndex = (learningFeedIndex + 1) % learningFeedItems.length;
+      learningFeedText.classList.add("is-changing");
+
+      window.setTimeout(() => {
+        learningFeedText.textContent = learningFeedItems[learningFeedIndex];
+        learningFeedText.classList.remove("is-changing");
+      }, 280);
+    }, 2600);
+  }
+
+  if (thoughtProcessToggle && thoughtProcessPanel) {
+    thoughtProcessToggle.addEventListener("click", () => {
+      const isOpen = thoughtProcessToggle.getAttribute("aria-expanded") === "true";
+      setThoughtProcessOpen(!isOpen);
+    });
+  }
+
+  projectTechButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const flow = button.nextElementSibling;
+      if (!(flow instanceof HTMLElement)) {
+        return;
+      }
+
+      const isOpen = button.getAttribute("aria-expanded") === "true";
+      button.classList.toggle("is-open", !isOpen);
+      button.setAttribute("aria-expanded", String(!isOpen));
+      flow.hidden = isOpen;
+    });
+  });
+
   const updateHeaderAndProgress = () => {
+    document.body.classList.toggle("is-deep-scroll", window.scrollY > 420);
+
     if (header) {
       if (window.scrollY > 12) {
         header.classList.add("is-scrolled");
@@ -288,7 +403,11 @@
   };
 
   updateHeaderAndProgress();
+  window.setTimeout(updateHeaderAndProgress, 0);
+  window.setTimeout(updateHeaderAndProgress, 250);
   window.addEventListener("scroll", updateHeaderAndProgress, { passive: true });
+  window.addEventListener("hashchange", updateHeaderAndProgress);
+  window.setInterval(updateHeaderAndProgress, 900);
 
   const setNavOpen = (isOpen) => {
     if (!nav || !navToggle) {

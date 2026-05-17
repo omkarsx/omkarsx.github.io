@@ -55,6 +55,11 @@
         </a>
       </nav>
       <div class="nav-actions">
+        <div class="mode-switch" role="group" aria-label="Website viewing mode">
+          <button class="mode-switch-btn is-active" type="button" data-mode="explore" aria-pressed="true">Explore</button>
+          <button class="mode-switch-btn" type="button" data-mode="engineer" aria-pressed="false">Engineer</button>
+        </div>
+
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme" aria-pressed="false">
           <i class="fa-solid fa-moon" aria-hidden="true"></i>
           <span>Dark</span>
@@ -68,6 +73,19 @@
   </header>
 
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+  <aside class="system-status-panel" id="systemStatusPanel" aria-label="Engineer mode system status" aria-hidden="true">
+    <div class="system-status-head">
+      <span>System Status</span>
+      <small>system online</small>
+    </div>
+    <ul>
+      <li><span class="status-dot" aria-hidden="true"></span><span>Learning</span><strong>ACTIVE</strong></li>
+      <li><span class="status-dot" aria-hidden="true"></span><span>Projects</span><strong>BUILDING</strong></li>
+      <li><span class="status-dot" aria-hidden="true"></span><span>Focus Mode</span><strong>ENABLED</strong></li>
+      <li><span class="status-dot" aria-hidden="true"></span><span>Cybersecurity</span><strong>EXPLORING</strong></li>
+    </ul>
+  </aside>
 
   <main>
     <section id="home" class="hero section-pad">
@@ -476,6 +494,67 @@
       </div>
     </section>
 
+    <section id="engineering-layer" class="engineer-layer section-pad" aria-labelledby="engineering-layer-title" aria-hidden="true">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Engineer Mode</p>
+          <h2 id="engineering-layer-title">Under the hood view</h2>
+          <p class="section-intro">A compact systems layer for technical thinking, learning signals, and build flow.</p>
+        </div>
+
+        <div class="engineer-dashboard reveal">
+          <div class="engineering-metrics" aria-label="Engineering metrics">
+            <article class="metric-card">
+              <span>Project Tracks</span>
+              <strong data-metric-value="3">3</strong>
+            </article>
+            <article class="metric-card">
+              <span>Technologies Exploring</span>
+              <strong data-metric-value="7">7</strong>
+            </article>
+            <article class="metric-card">
+              <span>Current Focus</span>
+              <strong>Cybersecurity</strong>
+            </article>
+            <article class="metric-card">
+              <span>System Status</span>
+              <strong>Active</strong>
+            </article>
+          </div>
+
+          <div class="engineer-panel learning-feed-panel">
+            <div class="engineer-panel-head">
+              <span>Live Learning Feed</span>
+              <small>engineer mode active</small>
+            </div>
+            <p>Currently Learning:</p>
+            <strong id="learningFeedText" aria-live="polite">JavaScript DOM</strong>
+          </div>
+
+          <div class="engineer-panel thought-panel">
+            <div class="engineer-panel-head">
+              <span>Thought Process Visualizer</span>
+              <small>loading architecture</small>
+            </div>
+            <button class="thought-toggle" id="thoughtProcessToggle" type="button" aria-expanded="false" aria-controls="thoughtProcessPanel">
+              <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+              <span>How I Think</span>
+            </button>
+            <div class="thought-flow" id="thoughtProcessPanel" hidden>
+              <ol>
+                <li>Observe</li>
+                <li>Research</li>
+                <li>Break Down</li>
+                <li>Build</li>
+                <li>Test</li>
+                <li>Improve</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="projects" class="section-pad">
       <div class="container">
         <div class="section-head reveal">
@@ -501,6 +580,18 @@
               <li>API Practice</li>
               <li>Local Storage</li>
             </ul>
+            <div class="project-architecture">
+              <button class="project-tech-toggle" type="button" aria-expanded="false">
+                <span>Architecture View</span>
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="project-tech-flow" hidden>
+                <span>UI Layer</span>
+                <span>Interaction Layer</span>
+                <span>Logic Layer</span>
+                <span>System Flow</span>
+              </div>
+            </div>
           </article>
 
           <article class="project-card reveal" data-category="iot">
@@ -514,6 +605,18 @@
               <li>Sensor Logging</li>
               <li>Dashboard UI</li>
             </ul>
+            <div class="project-architecture">
+              <button class="project-tech-toggle" type="button" aria-expanded="false">
+                <span>Architecture View</span>
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="project-tech-flow" hidden>
+                <span>Sensor Layer</span>
+                <span>Data Layer</span>
+                <span>Dashboard Layer</span>
+                <span>System Flow</span>
+              </div>
+            </div>
           </article>
 
           <article class="project-card reveal" data-category="web">
@@ -527,6 +630,18 @@
               <li>Scroll Motion</li>
               <li>Portfolio Branding</li>
             </ul>
+            <div class="project-architecture">
+              <button class="project-tech-toggle" type="button" aria-expanded="false">
+                <span>Architecture View</span>
+                <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+              </button>
+              <div class="project-tech-flow" hidden>
+                <span>Content Layer</span>
+                <span>Motion Layer</span>
+                <span>Navigation Layer</span>
+                <span>System Flow</span>
+              </div>
+            </div>
             <div class="project-actions">
               <a class="btn btn-ghost project-link" href="timeline.html">Open Timeline</a>
             </div>

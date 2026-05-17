@@ -55,6 +55,11 @@
         </a>
       </nav>
       <div class="nav-actions">
+        <div class="mode-switch" role="group" aria-label="Website viewing mode">
+          <button class="mode-switch-btn is-active" type="button" data-mode="explore" aria-pressed="true">Explore</button>
+          <button class="mode-switch-btn" type="button" data-mode="engineer" aria-pressed="false">Engineer</button>
+        </div>
+
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch color theme" aria-pressed="false">
           <i class="fa-solid fa-moon" aria-hidden="true"></i>
           <span>Dark</span>
@@ -68,6 +73,19 @@
   </header>
 
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+  <aside class="system-status-panel" id="systemStatusPanel" aria-label="Engineer mode system status" aria-hidden="true">
+    <div class="system-status-head">
+      <span>System Status</span>
+      <small>system online</small>
+    </div>
+    <ul>
+      <li><span class="status-dot" aria-hidden="true"></span><span>Learning</span><strong>ACTIVE</strong></li>
+      <li><span class="status-dot" aria-hidden="true"></span><span>Projects</span><strong>BUILDING</strong></li>
+      <li><span class="status-dot" aria-hidden="true"></span><span>Focus Mode</span><strong>ENABLED</strong></li>
+      <li><span class="status-dot" aria-hidden="true"></span><span>Cybersecurity</span><strong>EXPLORING</strong></li>
+    </ul>
+  </aside>
 
   <main>
     <section class="page-hero section-pad">
