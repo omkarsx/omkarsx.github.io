@@ -1067,7 +1067,45 @@ ul {
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  background: transparent;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(78, 192, 255, 0.24), transparent 36%),
+    rgba(4, 11, 20, 0.74);
+  box-shadow:
+    0 0 0 1px rgba(78, 192, 255, 0.14),
+    0 18px 44px rgba(1, 7, 18, 0.28),
+    0 0 34px rgba(78, 192, 255, 0.1);
+  transform: translateZ(0);
+  transition: box-shadow 0.55s ease, transform 0.55s ease;
+}
+
+.profile-photo-trigger::before,
+.profile-photo-trigger::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.profile-photo-trigger::before {
+  background:
+    radial-gradient(circle at 34% 26%, rgba(78, 192, 255, 0.2), transparent 38%),
+    radial-gradient(circle at 78% 16%, rgba(51, 211, 189, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(4, 11, 20, 0.18), transparent 26%, transparent 62%, rgba(2, 7, 14, 0.34)),
+    linear-gradient(90deg, rgba(2, 7, 14, 0.32), transparent 24%, transparent 74%, rgba(2, 7, 14, 0.34));
+  opacity: 0.62;
+  transition: opacity 0.82s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.profile-photo-trigger::after {
+  width: 42%;
+  inset: -20% auto -20% -55%;
+  border-radius: 0;
+  background: linear-gradient(100deg, transparent 0%, rgba(171, 239, 255, 0.18) 42%, rgba(51, 211, 189, 0.3) 50%, transparent 72%);
+  filter: blur(10px);
+  opacity: 0;
+  transform: translateX(0) skewX(-16deg);
 }
 
 .profile-photo-trigger img {
@@ -1075,11 +1113,47 @@ ul {
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
-  transition: transform 0.45s ease;
+  filter: blur(1.6px) saturate(1.08) contrast(1.03) brightness(0.94);
+  transform: scale(1.008);
+  transition:
+    filter 0.82s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.62s ease;
+  will-change: filter, transform;
+}
+
+.profile-photo-trigger:hover,
+.profile-photo-trigger:focus-visible {
+  transform: translateY(-1px) scale(1.01);
+  box-shadow:
+    0 0 0 1px rgba(78, 192, 255, 0.28),
+    0 18px 46px rgba(1, 7, 18, 0.34),
+    0 0 42px rgba(78, 192, 255, 0.18),
+    0 0 26px rgba(51, 211, 189, 0.1);
 }
 
 .profile-photo-trigger:hover img {
-  transform: scale(1.03);
+  transform: scale(1.018);
+}
+
+.profile-photo-trigger.is-photo-clear {
+  box-shadow:
+    0 0 0 1px rgba(78, 192, 255, 0.32),
+    0 20px 50px rgba(1, 7, 18, 0.34),
+    0 0 48px rgba(78, 192, 255, 0.22),
+    0 0 30px rgba(51, 211, 189, 0.12);
+}
+
+.profile-photo-trigger.is-photo-clear::before {
+  opacity: 0.22;
+}
+
+.profile-photo-trigger.is-photo-clear img {
+  filter: blur(0) saturate(1.04) contrast(1.04) brightness(1);
+  transform: scale(1);
+}
+
+.profile-photo-trigger.is-photo-revealing::after {
+  animation: photo-reveal-sweep 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .photo-face-back {
@@ -3824,6 +3898,22 @@ ul {
     box-shadow:
       0 0 14px rgba(51, 211, 189, 0.46),
       0 0 24px rgba(78, 192, 255, 0.38);
+  }
+}
+
+@keyframes photo-reveal-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(0) skewX(-16deg);
+  }
+
+  22% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(360%) skewX(-16deg);
   }
 }
 

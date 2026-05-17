@@ -2303,6 +2303,13 @@
       aiTimerId: null
     };
     let flipReadyTimerId = null;
+    let photoClickTimerId = null;
+    let photoRevealTimerId = null;
+    let photoSuppressClickUntil = 0;
+    let lastPhotoTap = { time: 0, x: 0, y: 0 };
+    const photoSingleClickDelay = 320;
+    const photoDoubleTapDelay = 340;
+    const photoDoubleTapDistance = 26;
     const winningLines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -2359,6 +2366,49 @@
         }
       }
       return null;
+    };
+
+    const clearPhotoClickTimer = () => {
+      if (photoClickTimerId) {
+        window.clearTimeout(photoClickTimerId);
+        photoClickTimerId = null;
+      }
+    };
+
+    const togglePhotoReveal = () => {
+      clearPhotoClickTimer();
+      photoSuppressClickUntil = performance.now() + 420;
+      const isRevealed = profilePhotoTrigger.classList.toggle("is-photo-clear");
+      profilePhotoTrigger.classList.remove("is-photo-revealing");
+
+      if (photoRevealTimerId) {
+        window.clearTimeout(photoRevealTimerId);
+        photoRevealTimerId = null;
+      }
+
+      if (!isRevealed) {
+        return;
+      }
+
+      window.requestAnimationFrame(() => {
+        profilePhotoTrigger.classList.add("is-photo-revealing");
+        photoRevealTimerId = window.setTimeout(() => {
+          profilePhotoTrigger.classList.remove("is-photo-revealing");
+          photoRevealTimerId = null;
+        }, 920);
+      });
+    };
+
+    const openGamePanel = () => {
+      photoFlipCard.classList.add("is-flipped");
+      if (flipReadyTimerId) {
+        window.clearTimeout(flipReadyTimerId);
+      }
+      flipReadyTimerId = window.setTimeout(() => {
+        if (photoFlipCard.classList.contains("is-flipped")) {
+          photoFlipCard.classList.add("is-ready");
+        }
+      }, 760);
     };
 
     const chooseComputerMove = () => {
@@ -2545,6 +2595,7 @@
       gameState.board = Array(9).fill("");
       gameState.currentTurn = "X";
       gameState.isOver = false;
+      clearPhotoClickTimer();
       heroChessBoard.innerHTML = "";
 
       heroChessUi.classList.remove("is-visible");
@@ -2555,16 +2606,43 @@
       updateGameStatus("Select a mode to start.");
     };
 
-    profilePhotoTrigger.addEventListener("click", () => {
-      photoFlipCard.classList.add("is-flipped");
-      if (flipReadyTimerId) {
-        window.clearTimeout(flipReadyTimerId);
+    profilePhotoTrigger.addEventListener("pointerup", (event) => {
+      if (event.pointerType === "mouse") {
+        return;
       }
-      flipReadyTimerId = window.setTimeout(() => {
-        if (photoFlipCard.classList.contains("is-flipped")) {
-          photoFlipCard.classList.add("is-ready");
-        }
-      }, 760);
+
+      const now = performance.now();
+      const distance = Math.hypot(event.clientX - lastPhotoTap.x, event.clientY - lastPhotoTap.y);
+      const isDoubleTap = now - lastPhotoTap.time <= photoDoubleTapDelay && distance <= photoDoubleTapDistance;
+
+      lastPhotoTap = { time: now, x: event.clientX, y: event.clientY };
+
+      if (isDoubleTap) {
+        event.preventDefault();
+        togglePhotoReveal();
+      }
+    });
+
+    profilePhotoTrigger.addEventListener("dblclick", (event) => {
+      event.preventDefault();
+      if (performance.now() < photoSuppressClickUntil) {
+        return;
+      }
+      togglePhotoReveal();
+    });
+
+    profilePhotoTrigger.addEventListener("click", (event) => {
+      if (performance.now() < photoSuppressClickUntil || event.detail > 1) {
+        event.preventDefault();
+        clearPhotoClickTimer();
+        return;
+      }
+
+      clearPhotoClickTimer();
+      photoClickTimerId = window.setTimeout(() => {
+        photoClickTimerId = null;
+        openGamePanel();
+      }, photoSingleClickDelay);
     });
 
     photoFlipCard.addEventListener("transitionend", (event) => {
